@@ -1,0 +1,167 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@theme inline {
+  /* Jost — clean, geometric, minimal body/UI text */
+  --font-sans: 'Jost', 'Jost Fallback', ui-sans-serif, sans-serif;
+  /* Caveat — handwritten, personal display font for headers */
+  --font-serif: 'Outfit', 'Outfit Fallback', ui-sans-serif, sans-serif;
+  --font-mono: 'Jost', 'Jost Fallback', ui-sans-serif, sans-serif;
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-tape: var(--tape);
+  --color-highlight: var(--highlight);
+  --color-blush: var(--blush);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+:root {
+  color-scheme: light;
+
+  /* Neutral cream/white/gray palette — no green, no pink */
+  --background: oklch(0.98 0.006 90);
+  --foreground: oklch(0.24 0.01 90);
+  --card: oklch(0.995 0.003 90);
+  --card-foreground: oklch(0.24 0.01 90);
+  --popover: oklch(0.995 0.003 90);
+  --popover-foreground: oklch(0.24 0.01 90);
+
+  /* charcoal — primary (was sage green) */
+  --primary: oklch(0.32 0.012 90);
+  --primary-foreground: oklch(0.98 0.004 90);
+
+  --secondary: oklch(0.94 0.006 90);
+  --secondary-foreground: oklch(0.3 0.01 90);
+  --muted: oklch(0.94 0.006 90);
+  --muted-foreground: oklch(0.42 0.008 90);
+
+  /* warm taupe — accent (was blush pink) */
+  --accent: oklch(0.88 0.012 80);
+  --accent-foreground: oklch(0.3 0.01 90);
+  --blush: oklch(0.88 0.012 80);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.24 0.01 90 / 13%);
+  --input: oklch(0.24 0.01 90 / 19%);
+  --ring: oklch(0.32 0.012 90);
+
+  /* paper tape — neutral warm gray (was mint) */
+  --tape: oklch(0.9 0.008 90 / 72%);
+  /* soft warm-gray highlighter (was butter yellow) */
+  --highlight: oklch(0.91 0.01 85 / 85%);
+
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* TODO: replace with your downloaded wrinkled-paper image at this path */
+    background-image: url('/images/paper-texture.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+}
+
+/* Big display headers: handwritten, personal */
+@utility display {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+/* Minimal wide-tracked uppercase subheader / meta label */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@utility tape-strip {
+  position: absolute;
+  height: 1.5rem;
+  width: 5rem;
+  background-color: var(--tape);
+  box-shadow: 0 1px 2px oklch(0.24 0.01 90 / 12%);
+}
+
+@utility paper-edge {
+  box-shadow:
+    0 1px 0 oklch(0.24 0.01 90 / 8%),
+    0 8px 24px -12px oklch(0.24 0.01 90 / 20%);
+}
+
+/* Playground: bored-button idea reveal */
+@keyframes bored-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bored-pop {
+  animation: bored-pop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Typing test: each character bounces up the moment it's typed */
+@keyframes bounce-up {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-bounce-up {
+  display: inline-block;
+  animation: bounce-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bored-pop,
+  .animate-bounce-up {
+    animation: none;
+  }
+}

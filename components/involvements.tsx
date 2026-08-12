@@ -24,7 +24,7 @@ const involvements: Involvement[] = [
     role: 'Internal Vice President · prev. Recruitment Chair, Events Chair',
     blurb:
       'Oversee ~25 staff and 10–12 interns — own the intern pipeline, mentor interns through their projects, and run staff ops including the annual retreat.',
-    image: '/images/involvement-tasa.jpg',
+    image: '/images/involvement-tasa.JPG',
     href: 'https://www.ucsbtasa.com/',
   },
   {

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Jost, Outfit } from 'next/font/google'
 import { SmoothScroll } from '@/components/smooth-scroll'
+import { CustomCursor } from '@/components/custom-cursor'
 import './globals.css'
 
 const _outfit = Outfit({
@@ -86,6 +87,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <SmoothScroll />
+        <CustomCursor />
         {children}
       </body>
     </html>

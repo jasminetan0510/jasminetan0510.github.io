@@ -243,3 +243,11 @@
     animation: none;
   }
 }
+
+/* Custom cursor: hide the native cursor once our JS-driven one is active.
+   Scoped behind a JS-added class so a JS failure leaves the native cursor
+   visible rather than disappearing with nothing to replace it. */
+.custom-cursor-active,
+.custom-cursor-active * {
+  cursor: none !important;
+}

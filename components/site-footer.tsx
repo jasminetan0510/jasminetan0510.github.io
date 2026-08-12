@@ -57,7 +57,7 @@ export function SiteFooter() {
         </div>
 
         <p className="mt-8 eyebrow text-muted-foreground">
-          Jasmine Tan · built and taped together in 2026
+          Jasmine · Tan
         </p>
       </div>
     </footer>

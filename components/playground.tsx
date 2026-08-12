@@ -1,15 +1,17 @@
 'use client'
 
-import { Dice5, Keyboard, Sticker } from 'lucide-react'
+import { Dice5, Keyboard, Sticker, UserRoundPlus } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { BoredButton } from '@/components/playground/bored-button'
+// import { CharacterCreator } from '@/components/playground/character-creator'
 import { StickerBoard } from '@/components/playground/sticker-board'
 import { TypingTest } from '@/components/playground/typing-test'
 import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
+import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
 
-type TabId = 'stickers' | 'typing' | 'bored'
+type TabId = 'stickers' | 'typing' | 'bored' | 'character'
 
 const tabs: { id: TabId; label: string; Icon: LucideIcon; blurb: string }[] = [
   {
@@ -30,6 +32,12 @@ const tabs: { id: TabId; label: string; Icon: LucideIcon; blurb: string }[] = [
     Icon: Dice5,
     blurb: 'Press it when you’re stuck. It picks a small thing to go do.',
   },
+  {
+    id: 'character',
+    label: 'Make a character',
+    Icon: UserRoundPlus,
+    blurb: 'Design a little pixel character and save it — it\u2019ll join the others walking at the bottom of the page.',
+  },
 ]
 
 export function Playground() {
@@ -41,11 +49,13 @@ export function Playground() {
       id="playground"
       className="mx-auto w-full max-w-5xl scroll-mt-8 px-5 py-16 sm:px-8"
     >
-      <SectionHeading
-        index="01"
-        title="Playground"
-        note="little things I build to think"
-      />
+      <Reveal>
+        <SectionHeading
+          index="01"
+          title="Playground"
+          note="little things I build to think"
+        />
+      </Reveal>
 
       <PaperCard className="mt-8 p-4 sm:p-6">
         <Tape className="-top-3 left-8 -rotate-3" label="wip" />
@@ -89,6 +99,7 @@ export function Playground() {
           {active === 'stickers' ? <StickerBoard /> : null}
           {active === 'typing' ? <TypingTest /> : null}
           {active === 'bored' ? <BoredButton /> : null}
+          {active === 'character' ? <CharacterCreator /> : null}
         </div>
       </PaperCard>
     </section>

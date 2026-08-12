@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
+import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
 
 type Involvement = {
@@ -75,11 +76,13 @@ export function Involvements() {
       id="involvements"
       className="mx-auto w-full max-w-5xl scroll-mt-8 px-5 py-16 sm:px-8"
     >
-      <SectionHeading
-        index="02"
-        title="My involvements"
-        note="outside the classroom"
-      />
+      <Reveal>
+        <SectionHeading
+          index="02"
+          title="My involvements"
+          note="outside the classroom"
+        />
+      </Reveal>
 
       <PaperCard className="mt-8 overflow-hidden p-4 sm:p-6">
         <Tape className="-top-3 left-10 -rotate-2" label="+" />

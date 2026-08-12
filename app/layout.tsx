@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Jost, Outfit } from 'next/font/google'
+import { SmoothScroll } from '@/components/smooth-scroll'
 import './globals.css'
 
 const _outfit = Outfit({
@@ -83,7 +84,10 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <SmoothScroll />
+        {children}
+      </body>
     </html>
   )
 }

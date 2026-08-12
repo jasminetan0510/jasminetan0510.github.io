@@ -15,7 +15,7 @@ export function SiteFooter() {
         <Tape className="-top-3 left-1/2 -translate-x-1/2 rotate-1" label="fin" />
 
         <h2 className="display text-3xl text-balance sm:text-4xl">
-          Say hello — I reply fast.
+          Let's connect.
         </h2>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">

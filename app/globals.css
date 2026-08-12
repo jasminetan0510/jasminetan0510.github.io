@@ -4,7 +4,7 @@
 @theme inline {
   /* Jost — clean, geometric, minimal body/UI text */
   --font-sans: 'Jost', 'Jost Fallback', ui-sans-serif, sans-serif;
-  /* Caveat — handwritten, personal display font for headers */
+  /* Outfit — clean geometric sans, used for headers */
   --font-serif: 'Outfit', 'Outfit Fallback', ui-sans-serif, sans-serif;
   --font-mono: 'Jost', 'Jost Fallback', ui-sans-serif, sans-serif;
 
@@ -76,6 +76,39 @@
   --radius: 0.5rem;
 }
 
+.dark {
+  color-scheme: dark;
+
+  /* Same neutral cream/gray/warm family, inverted for a dark room rather
+     than switched to a blue-tinted "dark mode" palette. */
+  --background: oklch(0.19 0.008 90);
+  --foreground: oklch(0.94 0.008 90);
+  --card: oklch(0.23 0.008 90);
+  --card-foreground: oklch(0.94 0.008 90);
+  --popover: oklch(0.23 0.008 90);
+  --popover-foreground: oklch(0.94 0.008 90);
+
+  --primary: oklch(0.88 0.01 90);
+  --primary-foreground: oklch(0.18 0.01 90);
+
+  --secondary: oklch(0.27 0.008 90);
+  --secondary-foreground: oklch(0.9 0.008 90);
+  --muted: oklch(0.27 0.008 90);
+  --muted-foreground: oklch(0.65 0.01 90);
+
+  --accent: oklch(0.32 0.014 80);
+  --accent-foreground: oklch(0.9 0.008 90);
+  --blush: oklch(0.32 0.014 80);
+
+  --destructive: oklch(0.65 0.2 27);
+  --border: oklch(0.94 0.008 90 / 14%);
+  --input: oklch(0.94 0.008 90 / 20%);
+  --ring: oklch(0.88 0.01 90);
+
+  --tape: oklch(0.35 0.012 90 / 60%);
+  --highlight: oklch(0.4 0.02 85 / 55%);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -88,6 +121,19 @@
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    /* In dark mode the same texture blends into the dark background color
+       instead of needing a separate dark image. */
+    background-blend-mode: multiply;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  /* Dark mode uses its own background image instead of the light-mode
+     texture. TODO: add your dark-mode image at this path. */
+  .dark body {
+    background-image: url('/images/paper-texture-dark.jpeg');
+    background-blend-mode: normal;
   }
 }
 

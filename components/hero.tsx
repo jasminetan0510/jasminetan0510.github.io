@@ -17,7 +17,7 @@ export function Hero() {
     <header className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-5 pt-14 pb-16 sm:px-8 sm:pt-20 md:flex-row md:items-center md:justify-between md:gap-14">
       <div className="flex max-w-xl flex-col gap-6">
         <p className="eyebrow text-muted-foreground">
-          Jasmine Tan — Portfolio, 2026
+          Jasmine Tan — Portfolio
         </p>
 
         <h1 className="display text-5xl leading-[0.95] text-balance sm:text-6xl lg:text-7xl">
@@ -42,13 +42,12 @@ export function Hero() {
 
         <div className="flex flex-col gap-3 text-sm leading-relaxed text-foreground/85 sm:text-[0.95rem]">
           <p className="max-w-prose">
-            I&apos;m a rising fourth-year at UCSB. I like working with
-            people, building things, and chasing new ideas into real
-            ventures.
+            I&apos;m a rising fourth-year at UCSB. I love working with
+            people, building things, and bringing visions to life.
           </p>
           <p className="max-w-prose">
-            Outside of that: the gym, local trails, and experimenting in the
-            kitchen.
+            When I'm not sitting behind my laptop, you can find me lifting at the gym
+            , exploring the local outdoors, and experimenting in the kitchen! 
           </p>
         </div>
 
@@ -57,14 +56,15 @@ export function Hero() {
             href="#projects"
             className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
           >
-            See the work
+            Check out my projects
             <ArrowDown className="size-4" aria-hidden="true" />
           </a>
           <a
             href="#playground"
             className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
           >
-            Play with something
+            Playground
+            <ArrowDown className="size-4" aria-hidden="true" />
           </a>
         </div>
       </div>

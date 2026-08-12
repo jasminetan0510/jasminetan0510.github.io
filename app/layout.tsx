@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Caveat, Jost } from 'next/font/google'
+import { Jost, Outfit } from 'next/font/google'
 import './globals.css'
 
-const _caveat = Caveat({
+const _outfit = Outfit({
   subsets: ['latin'],
 })
 const _jost = Jost({ subsets: ['latin'] })
@@ -55,9 +55,23 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light',
+  colorScheme: 'light dark',
   themeColor: '#f9f7ec',
 }
+
+// Runs before paint, before React hydrates — reads saved preference (or
+// system preference if none saved) and applies the .dark class immediately.
+// Prevents a flash of the wrong theme on load.
+const themeInitScript = `
+  (function () {
+    try {
+      var saved = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = saved ? saved === 'dark' : prefersDark;
+      if (isDark) document.documentElement.classList.add('dark');
+    } catch (e) {}
+  })();
+`
 
 export default function RootLayout({
   children,
@@ -66,6 +80,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-background">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="font-sans antialiased">{children}</body>
     </html>
   )

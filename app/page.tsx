@@ -18,8 +18,8 @@ export default function Page() {
       <Hero />
       <Currently />
       <main>
-        <FeaturedProjects />
         <Skills />
+        <FeaturedProjects />
         <Testimonials />
         <Involvements />
         <Playground />

@@ -99,11 +99,12 @@ export function Involvements() {
         >
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-sm bg-muted sm:aspect-[21/9]">
             <Image
+              key={active.image}
               src={active.image}
               alt={`${active.name} — ${active.role}`}
               fill
               sizes="(max-width: 768px) 100vw, 900px"
-              className="object-cover"
+              className="object-cover animate-[fade-in_0.4s_ease-out]"
               priority={index === 0}
             />
 
@@ -125,7 +126,7 @@ export function Involvements() {
             </button>
           </div>
 
-          <div className="mt-4 flex flex-col gap-1.5">
+          <div key={active.name} className="mt-4 flex flex-col gap-1.5 animate-[fade-in_0.4s_ease-out]">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h3 className="display text-2xl">{active.name}</h3>
               <p className="eyebrow text-muted-foreground">{active.role}</p>

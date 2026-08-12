@@ -16,7 +16,7 @@ const projects = [
     outcome:
       'Outcome: presented and published in the Proceedings of the 31st ACM Conference on Innovation and Technology in Computer Science Education (ITiCSE \u201926); launches fall 2026 in UCSB\u2019s CS8 and CS24 intro courses (250+ students/quarter).',
     stack: ['React', 'FastAPI', 'AI/LLM'],
-    image: '/images/project-classroom-tool.png',
+    image: '/images/project-caliber.png',
     // TODO: add the real repo link once you have it (private research repo?)
     href: '#',
     tilt: '-rotate-1',
@@ -43,7 +43,7 @@ const projects = [
     outcome:
       'Outcome: waitlist auto-promotion, scheduled reminder emails, and slot swaps. Now sole maintainer heading into a full-quarter dry run ahead of a program-wide launch this fall.',
     stack: ['FastAPI', 'PostgreSQL', 'Celery/Redis', 'React', 'Vite'],
-    image: '/images/project-classroom-tool.png',
+    image: '/images/project-scitrek.png',
     href: 'https://github.com/Anteater10/uni-volunteer-scheduler',
     tilt: 'rotate-1',
   },
@@ -56,7 +56,7 @@ const projects = [
     outcome:
       'Outcome: OCR receipt scanning and barcode lookup cut manual item entry to near-zero, backed by Supabase for storage and auth.',
     stack: ['React Native', 'Expo', 'FastAPI', 'Supabase'],
-    image: '/images/project-campus-app.png',
+    image: '/images/project-ucsb-dining.png',
     href: 'https://github.com/ucsb-cs184-w26/team12-KIT',
     tilt: '-rotate-1',
   },
@@ -69,7 +69,7 @@ const projects = [
     outcome:
       'Outcome: introduced a same-day PR-review norm that eliminated the review backlogs we\u2019d hit on a prior project \u2014 delivered 100% of committed work on schedule.',
     stack: ['React', 'Spring Boot'],
-    image: '/images/project-research-dashboard.png',
+    image: '/images/project-kit.png',
     href: 'https://github.com/ucsb-cs156-f25/proj-dining-f25-05',
     tilt: 'rotate-1',
   },
@@ -82,7 +82,7 @@ const projects = [
     outcome:
       'Outcome: full-stack, with persistent chat history and secure auth built in.',
     stack: ['React', 'Node.js', 'OpenAI API'],
-    image: '/images/project-research-dashboard.png',
+    image: '/images/project-yunie.png',
     // TODO: add your GitHub link for this repo
     href: '#',
     tilt: '-rotate-1',
@@ -116,7 +116,7 @@ export function FeaturedProjects() {
     >
       <Reveal>
         <SectionHeading
-          index="01"
+          index="02"
           title="Featured projects"
           note="what changed because of it"
         />
@@ -125,6 +125,7 @@ export function FeaturedProjects() {
       <ul className="mt-8 flex flex-col gap-6">
         {projects.map((project, index) => (
           <li key={project.name}>
+            <Reveal delay={index * 80}>
             <PaperCard
               className={`group flex flex-col gap-5 p-4 transition-transform duration-300 hover:-translate-y-1 sm:flex-row sm:p-5 ${project.tilt} hover:rotate-0`}
             >
@@ -200,6 +201,7 @@ export function FeaturedProjects() {
                 </div>
               </div>
             </PaperCard>
+            </Reveal>
           </li>
         ))}
       </ul>

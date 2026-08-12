@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 const AUDIO_SRC = '/audio/ambient.mp3'
 
 function railButtonClass() {
-  return 'paper-edge flex size-11 items-center justify-center rounded-full border border-border bg-card text-foreground transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+  return 'paper-edge flex size-11 items-center justify-center rounded-full border border-border bg-card text-foreground transition-transform hover:-translate-y-0.5 active:scale-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
 }
 
 function AudioToggle() {

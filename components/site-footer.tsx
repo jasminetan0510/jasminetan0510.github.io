@@ -22,7 +22,7 @@ export function SiteFooter() {
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <a
             href={`mailto:${EMAIL}`}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:scale-95"
           >
             <Mail className="size-4" aria-hidden="true" />
             {EMAIL}
@@ -31,7 +31,7 @@ export function SiteFooter() {
             href={`https://github.com/${GITHUB_USER}`}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
           >
             <GithubMark className="size-4" />
             github.com/{GITHUB_USER}
@@ -40,7 +40,7 @@ export function SiteFooter() {
             href={LINKEDIN_URL}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
           >
             <Linkedin className="size-4" aria-hidden="true" />
             LinkedIn
@@ -50,7 +50,7 @@ export function SiteFooter() {
           <a
             href="/resume.pdf"
             download
-            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
           >
             <Download className="size-4" aria-hidden="true" />
             Download Resume

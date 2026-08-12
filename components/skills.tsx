@@ -42,13 +42,13 @@ export function Skills() {
     <section className="mx-auto w-full max-w-5xl scroll-mt-8 px-5 py-16 sm:px-8">
       <Reveal>
         <SectionHeading
-          index="02"
+          index="01"
           title="Toolkit"
           note="the full scan, not pieced together per project"
         />
       </Reveal>
 
-      <PaperCard className="relative mt-8 flex flex-col gap-5 p-5 sm:p-6">
+      <PaperCard className="relative mt-8 flex flex-col gap-5 p-5 transition-transform duration-300 hover:-translate-y-1 sm:p-6">
         <Tape className="-top-3 right-10 rotate-2" />
         {skillGroups.map((group) => (
           <div key={group.label} className="flex flex-col gap-2">

@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
+  colorScheme: 'light',
   themeColor: '#f9f7ec',
 }
 
@@ -67,10 +67,11 @@ export const viewport: Viewport = {
 const themeInitScript = `
   (function () {
     try {
+      // Always defaults to light, regardless of OS/browser dark-mode
+      // preference — only switches if the visitor explicitly toggles the
+      // lamp button (and that choice persists via localStorage).
       var saved = localStorage.getItem('theme');
-      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      var isDark = saved ? saved === 'dark' : prefersDark;
-      if (isDark) document.documentElement.classList.add('dark');
+      if (saved === 'dark') document.documentElement.classList.add('dark');
     } catch (e) {}
   })();
 `

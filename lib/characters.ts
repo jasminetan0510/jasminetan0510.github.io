@@ -77,3 +77,13 @@ export type Character = {
     window.dispatchEvent(new Event('characters-updated'))
     return newCharacter
   }
+  
+  /** Permanently deletes every saved character for this visitor. */
+  export function clearCharacters(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // Nothing to clean up if storage was never accessible.
+    }
+    window.dispatchEvent(new Event('characters-updated'))
+  }

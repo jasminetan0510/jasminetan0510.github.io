@@ -1,12 +1,14 @@
 'use client'
 
-import { RotateCcw } from 'lucide-react'
-import { useState } from 'react'
+import { RotateCcw, Skull } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ACCESSORY_OPTIONS,
   BASE_OPTIONS,
   HAIR_OPTIONS,
   OUTFIT_OPTIONS,
+  clearCharacters,
+  loadCharacters,
   saveCharacter,
 } from '@/lib/characters'
 import { cn } from '@/lib/utils'
@@ -67,6 +69,31 @@ export function CharacterCreator() {
     accessory: 0,
   })
   const [saved, setSaved] = useState(false)
+  const [characterCount, setCharacterCount] = useState(0)
+  const [destructArmed, setDestructArmed] = useState(false)
+  const armedTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    function refreshCount() {
+      setCharacterCount(loadCharacters().length)
+    }
+    refreshCount()
+    window.addEventListener('characters-updated', refreshCount)
+    return () => window.removeEventListener('characters-updated', refreshCount)
+  }, [])
+
+  function handleDestruct() {
+    if (!destructArmed) {
+      setDestructArmed(true)
+      // Auto-disarm after a few seconds so an accidental second click
+      // later (unrelated to this) can't trigger a delete.
+      armedTimeoutRef.current = window.setTimeout(() => setDestructArmed(false), 4000)
+      return
+    }
+    if (armedTimeoutRef.current) window.clearTimeout(armedTimeoutRef.current)
+    clearCharacters()
+    setDestructArmed(false)
+  }
 
   function setLayer(name: LayerName, index: number) {
     setLayers((prev) => ({ ...prev, [name]: index }))
@@ -152,10 +179,28 @@ export function CharacterCreator() {
         <button
           type="button"
           onClick={handleSave}
-          className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+          className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:scale-95"
         >
           {saved ? 'Saved — look at the bottom of the page!' : 'Save my character'}
         </button>
+
+        {characterCount > 0 ? (
+          <button
+            type="button"
+            onClick={handleDestruct}
+            className={cn(
+              'inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+              destructArmed
+                ? 'border-destructive bg-destructive text-white'
+                : 'border-destructive/40 text-destructive hover:bg-destructive/10',
+            )}
+          >
+            <Skull className="size-3.5" aria-hidden="true" />
+            {destructArmed
+              ? `Click again to destroy all ${characterCount}`
+              : `Destroy all saved characters (${characterCount})`}
+          </button>
+        ) : null}
       </div>
     </div>
   )

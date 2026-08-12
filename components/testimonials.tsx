@@ -35,7 +35,8 @@ export function Testimonials() {
       <ul className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
         {testimonials.map((t, i) => (
           <li key={i}>
-            <PaperCard className="relative flex h-full flex-col gap-3 p-5">
+            <Reveal delay={i * 100}>
+            <PaperCard className="relative flex h-full flex-col gap-3 p-5 transition-transform duration-300 hover:-translate-y-1">
               {i === 0 ? (
                 <Tape className="-top-3 left-8 -rotate-2" label="real" />
               ) : null}
@@ -46,6 +47,7 @@ export function Testimonials() {
                 {t.source}
               </p>
             </PaperCard>
+            </Reveal>
           </li>
         ))}
       </ul>

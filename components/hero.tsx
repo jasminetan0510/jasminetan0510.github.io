@@ -30,7 +30,7 @@ export function Hero() {
         </div>
 
         <p className="eyebrow text-muted-foreground">
-          Jasmine Tan — Portfolio
+          Jasmine Tan — Portfolio, 2026
         </p>
 
         <h1 className="display text-5xl leading-[0.95] text-balance sm:text-6xl lg:text-7xl">
@@ -60,21 +60,22 @@ export function Hero() {
             ventures.
           </p>
           <p className="max-w-prose">
-            Outside of that, you can find me lifting at the gym, exploring the local outdoors, and experimenting in the kitchen!
+            Outside of that: the gym, local trails, and experimenting in the
+            kitchen.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <a
             href="#projects"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:scale-95"
           >
             See the work
             <ArrowDown className="size-4" aria-hidden="true" />
           </a>
           <a
             href="#playground"
-            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
           >
             Play with something
           </a>

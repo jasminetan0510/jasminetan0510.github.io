@@ -1,9 +1,10 @@
 import { Download } from 'lucide-react'
+import { Star } from "lucide-react";
 
 const navLinks = [
-  { label: 'Projects', href: '#projects', num: '01' },
-  { label: 'Involvements', href: '#involvements', num: '02' },
-  { label: 'Playground', href: '#playground', num: '03' },
+  { label: 'Projects', href: '#projects', num: '02' },
+  { label: 'Involvements', href: '#involvements', num: '04' },
+  { label: 'Playground', href: '#playground', num: '05' },
 ]
 
 /**
@@ -32,7 +33,8 @@ export function SiteHeader() {
               href={link.href}
               className="eyebrow flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
             >
-              <span className="text-primary">{link.num}</span>
+              <span className="text-primary"></span>
+              <Star className="w-4 h-4 text-primary shrink-0" />
               {link.label}
             </a>
           ))}
@@ -49,7 +51,7 @@ export function SiteHeader() {
           </a>
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:scale-95"
           >
             Get in touch
           </a>

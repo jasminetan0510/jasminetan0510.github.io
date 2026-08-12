@@ -244,10 +244,58 @@
   }
 }
 
+/* "Playground" hover: each letter bobs and tilts on a staggered delay,
+   rippling across the word like carousel horses out of phase with
+   each other. See CarouselText in scrapbook.tsx. */
+@keyframes letter-carousel {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-5px) rotate(-8deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(5px) rotate(8deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-letter {
+    animation: none !important;
+  }
+}
+
 /* Custom cursor: hide the native cursor once our JS-driven one is active.
    Scoped behind a JS-added class so a JS failure leaves the native cursor
    visible rather than disappearing with nothing to replace it. */
 .custom-cursor-active,
 .custom-cursor-active * {
   cursor: none !important;
+}
+
+/* Easter egg: Konami code sticker burst. Each piece falls from the top,
+   drifting sideways and rotating slightly, then fades near the end. */
+@keyframes easter-egg-fall {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift, 0px), 100vh) rotate(var(--rotate, 180deg));
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*='easter-egg-fall'] {
+    animation: none !important;
+    display: none;
+  }
 }

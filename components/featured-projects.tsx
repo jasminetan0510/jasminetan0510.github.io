@@ -1,5 +1,8 @@
-import { ArrowUpRight } from 'lucide-react'
+'use client'
+
+import { ArrowUpRight, X } from 'lucide-react'
 import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
 import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
 
@@ -7,6 +10,7 @@ const projects = [
   {
     name: 'Caliber',
     role: 'Software Engineer · Caliber Research Group, UCSB',
+    status: 'Shipping fall 2026',
     summary:
       'An AI-assisted course-planning and mastery-based-practice platform for university instruction, advised by Prof. Diba Mirza. I own two pieces of it: a project-management ticket tracker for the team\u2019s Software Engineering and AI groups, and a redesign of the LeetCode Autograder\u2019s student submission flow and feedback interface.',
     outcome:
@@ -16,10 +20,24 @@ const projects = [
     // TODO: add the real repo link once you have it (private research repo?)
     href: '#',
     tilt: '-rotate-1',
+    // Case study — only Caliber has one right now. The bracketed [TODO]
+    // lines are real gaps: I only have the facts, not the story. Replace
+    // them with what actually happened before this goes out publicly.
+    caseStudy: {
+      problem:
+        'The Caliber team was growing across two groups (Software Engineering and AI) with no shared way to see who owned what. Work was getting tracked informally, which made it hard to tell what was in progress, blocked, or done. Separately, the LeetCode Autograder gave students a flat pass/fail with no breakdown of what actually went wrong.',
+      approach:
+        '[TODO: what did you actually try first? Did you look at existing tools before deciding to build one? Was there a version 1 that didn\u2019t work? This is the part only you can fill in \u2014 it\u2019s the most convincing part of a case study to a PM/SWE reader.]',
+      shipped:
+        'A ticket tracker supporting creation, assignment, and self-claiming, with status, ownership, deadlines, and a change history \u2014 built for the team\u2019s day-to-day coordination. On the autograder side, restructured the submission flow into a clear 6-step pipeline and rebuilt the feedback UI to separate what passed, what didn\u2019t, and what to fix.',
+      reflection:
+        '[TODO: what would you change if you rebuilt this? Was there a TA/student feedback loop? Anything you shipped that you\u2019d now reconsider? Even one honest sentence here does more for credibility than a polished one that isn\u2019t true.]',
+    },
   },
   {
     name: 'SciTrek Volunteer Scheduler',
     role: 'Lead Developer',
+    status: 'Sole maintainer',
     summary:
       'An account-less volunteer scheduling platform for UCSB SciTrek\u2019s K-12 outreach program, with a three-role UX (participant, admin, organizer) and quarterly CSV module imports. Built to replace SignupGenius with something mobile-optimized and ad-free.',
     outcome:
@@ -32,6 +50,7 @@ const projects = [
   {
     name: 'KIT: Kitchen Inventory Tracking',
     role: 'Mobile Developer · CS184 team of 7',
+    status: 'Team of 7',
     summary:
       'A cross-platform mobile app for real-time kitchen inventory management, built from scratch with a 7-person team. I ranked #3 on the team by commit volume and owned the home dashboard, notifications, and environmental-impact scoring for food waste.',
     outcome:
@@ -44,6 +63,7 @@ const projects = [
   {
     name: 'UCSB Project Dining',
     role: 'De Facto Lead · CS156 team of 6',
+    status: 'Shipped',
     summary:
       'Extended a legacy UCSB dining-menu web app with new backend and frontend features. I ran biweekly retros and standups, led code reviews, and resolved merge conflicts for the team.',
     outcome:
@@ -56,6 +76,7 @@ const projects = [
   {
     name: 'yunie: Productivity Agent',
     role: 'Solo project',
+    status: 'Resuming now',
     summary:
       'An AI-powered assistant enabling conversational task management, context-aware reminders, intelligent scheduling, and dynamic goal tracking.',
     outcome:
@@ -69,6 +90,25 @@ const projects = [
 ]
 
 export function FeaturedProjects() {
+  const [openCaseStudy, setOpenCaseStudy] = useState(false)
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+  const caliber = projects[0]
+
+  useEffect(() => {
+    if (!openCaseStudy) return
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpenCaseStudy(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    closeButtonRef.current?.focus()
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = originalOverflow
+    }
+  }, [openCaseStudy])
+
   return (
     <section
       id="projects"
@@ -105,11 +145,14 @@ export function FeaturedProjects() {
               </div>
 
               <div className="flex flex-col gap-2.5">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
                   <h3 className="display text-2xl">{project.name}</h3>
                   <p className="eyebrow text-muted-foreground">
                     {project.role}
                   </p>
+                  <span className="rounded-full bg-highlight/60 px-2 py-0.5 eyebrow text-[10px] text-foreground/80">
+                    {project.status}
+                  </span>
                 </div>
 
                 <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
@@ -129,6 +172,16 @@ export function FeaturedProjects() {
                       {item}
                     </span>
                   ))}
+                  {project.caseStudy ? (
+                    <button
+                      type="button"
+                      onClick={() => setOpenCaseStudy(true)}
+                      className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                    >
+                      Read the full story
+                      <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                    </button>
+                  ) : null}
                   {project.href !== '#' ? (
                     <a
                       href={project.href}
@@ -150,6 +203,62 @@ export function FeaturedProjects() {
           </li>
         ))}
       </ul>
+
+      {openCaseStudy && caliber.caseStudy ? (
+        <div
+          className="journal-overlay fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/40 p-4 backdrop-blur-sm sm:items-center sm:p-6"
+          onClick={() => setOpenCaseStudy(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="case-study-title"
+            onClick={(event) => event.stopPropagation()}
+            className="journal-panel paper-edge relative my-8 w-full max-w-2xl -rotate-[0.4deg] rounded-sm border border-border bg-card p-6 sm:my-0 sm:p-10"
+          >
+            <Tape className="-top-3 left-10 -rotate-3" label="case study" />
+
+            <button
+              ref={closeButtonRef}
+              type="button"
+              onClick={() => setOpenCaseStudy(false)}
+              aria-label="Close case study"
+              className="absolute right-3 top-3 inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <X className="size-4" aria-hidden="true" />
+            </button>
+
+            <p className="eyebrow text-muted-foreground">Case study</p>
+            <h3
+              id="case-study-title"
+              className="mt-2 display text-3xl leading-[1.05] text-balance sm:text-4xl"
+            >
+              {caliber.name}
+            </h3>
+
+            <div className="mt-6 flex flex-col gap-5 text-[0.95rem] leading-relaxed text-foreground/85">
+              <div>
+                <p className="eyebrow mb-1.5 text-primary">The problem</p>
+                <p className="max-w-prose">{caliber.caseStudy.problem}</p>
+              </div>
+              <div>
+                <p className="eyebrow mb-1.5 text-primary">What I tried</p>
+                <p className="max-w-prose">{caliber.caseStudy.approach}</p>
+              </div>
+              <div>
+                <p className="eyebrow mb-1.5 text-primary">What shipped</p>
+                <p className="max-w-prose">{caliber.caseStudy.shipped}</p>
+              </div>
+              <div>
+                <p className="eyebrow mb-1.5 text-primary">
+                  What I&apos;d do differently
+                </p>
+                <p className="max-w-prose">{caliber.caseStudy.reflection}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

@@ -78,7 +78,7 @@ export function Involvements() {
     >
       <Reveal>
         <SectionHeading
-          index="02"
+          index="04"
           title="My involvements"
           note="outside the classroom"
         />

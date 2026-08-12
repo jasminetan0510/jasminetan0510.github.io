@@ -4,10 +4,10 @@ import { Dice5, Keyboard, Sticker, UserRoundPlus } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { BoredButton } from '@/components/playground/bored-button'
-// import { CharacterCreator } from '@/components/playground/character-creator'
+import { CharacterCreator } from '@/components/playground/character-creator'
 import { StickerBoard } from '@/components/playground/sticker-board'
 import { TypingTest } from '@/components/playground/typing-test'
-import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
+import { CarouselText, PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
 
@@ -51,8 +51,8 @@ export function Playground() {
     >
       <Reveal>
         <SectionHeading
-          index="01"
-          title="Playground"
+          index="05"
+          title={<CarouselText text="Playground" />}
           note="little things I build to think"
         />
       </Reveal>

@@ -89,6 +89,13 @@ export default function RootLayout({
         <SmoothScroll />
         <CustomCursor />
         {children}
+        {/* TODO: sign up at goatcounter.com (free), then replace
+            YOURCODE below with your actual GoatCounter site code. */}
+        <script
+          data-goatcounter="https://YOURCODE.goatcounter.com/count"
+          async
+          src="https://gc.zgo.at/count.js"
+        />
       </body>
     </html>
   )

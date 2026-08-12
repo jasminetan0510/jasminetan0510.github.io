@@ -51,7 +51,7 @@ export function SectionHeading({
   note,
 }: {
   index: string
-  title: string
+  title: React.ReactNode
   note?: string
 }) {
   return (
@@ -67,6 +67,38 @@ export function SectionHeading({
         {title}
       </h2>
     </div>
+  )
+}
+
+/**
+ * Splits text into individual letters, each with a staggered delay, so a
+ * "merry-go-round" bob-and-tilt animation ripples across the word on hover
+ * (see the letter-carousel keyframe in globals.css). Only plays while
+ * hovered — CSS-driven, no JS needed.
+ */
+export function CarouselText({
+  text,
+  className,
+}: {
+  text: string
+  className?: string
+}) {
+  return (
+    <span className={cn('group inline-block cursor-default', className)}>
+      {text.split('').map((char, i) => (
+        <span
+          key={i}
+          style={{ animationDelay: `${i * 60}ms` }}
+          className={cn(
+            'carousel-letter inline-block [animation-duration:0.6s] [animation-iteration-count:infinite]',
+            '[animation-name:none] [animation-timing-function:ease-in-out]',
+            'group-hover:[animation-name:letter-carousel]',
+          )}
+        >
+          {char === ' ' ? '\u00A0' : char}
+        </span>
+      ))}
+    </span>
   )
 }
 

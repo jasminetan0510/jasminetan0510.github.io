@@ -15,7 +15,8 @@ export function SiteFooter() {
         <Tape className="-top-3 left-1/2 -translate-x-1/2 rotate-1" label="fin" />
 
         <h2 className="display text-3xl text-balance sm:text-4xl">
-          Let's connect.
+          Open to PM &amp; software engineering roles — let&apos;s build
+          something.
         </h2>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -57,7 +58,7 @@ export function SiteFooter() {
         </div>
 
         <p className="mt-8 eyebrow text-muted-foreground">
-          Jasmine · Tan
+          Jasmine Tan · built and taped together in 2026
         </p>
       </div>
     </footer>

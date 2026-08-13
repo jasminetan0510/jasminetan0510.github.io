@@ -1,6 +1,6 @@
 'use client'
 
-import { Lamp, Moon, Music, VolumeX } from 'lucide-react'
+import { AlertCircle, Lamp, Moon, Music, VolumeX } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 // TODO: add your calming ambient audio file at this path (mp3 or ogg).
@@ -15,35 +15,63 @@ function railButtonClass() {
 function AudioToggle() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [playing, setPlaying] = useState(false)
+  // Distinguishes "the file is missing/broken" from "browser blocked
+  // autoplay" or "user just hasn't pressed play yet" — previously all
+  // three looked identical (button just silently did nothing).
+  const [hasError, setHasError] = useState(false)
 
   function toggle() {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || hasError) return
     if (playing) {
       audio.pause()
       setPlaying(false)
     } else {
       // play() returns a promise that rejects if the browser blocks it —
       // this is triggered by a real click, so autoplay policies allow it.
-      audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false))
+      audio
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => setPlaying(false))
     }
   }
 
+  const label = hasError
+    ? 'Ambient audio file is missing — see /public/audio/ambient.mp3'
+    : playing
+      ? 'Pause background audio'
+      : 'Play calming background audio'
+
   return (
     <>
-      <audio ref={audioRef} src={AUDIO_SRC} loop preload="none" />
+      <audio
+        ref={audioRef}
+        src={AUDIO_SRC}
+        loop
+        preload="none"
+        onError={() => setHasError(true)}
+      />
       <button
         type="button"
         onClick={toggle}
         aria-pressed={playing}
-        aria-label={playing ? 'Pause background audio' : 'Play calming background audio'}
-        title={playing ? 'Pause ambient audio' : 'Play ambient audio'}
-        className={railButtonClass()}
+        aria-label={label}
+        title={label}
+        disabled={hasError}
+        className={`${railButtonClass()} ${hasError ? 'cursor-not-allowed opacity-60' : ''}`}
       >
-        {playing ? (
+        {hasError ? (
+          <AlertCircle
+            className="size-4.5 text-destructive"
+            aria-hidden="true"
+          />
+        ) : playing ? (
           <Music className="size-4.5" aria-hidden="true" />
         ) : (
-          <VolumeX className="size-4.5 text-muted-foreground" aria-hidden="true" />
+          <VolumeX
+            className="size-4.5 text-muted-foreground"
+            aria-hidden="true"
+          />
         )}
       </button>
     </>
@@ -77,7 +105,11 @@ function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-pressed={isDark ?? false}
-      aria-label={isDark ? 'Turn the lamp on (switch to light mode)' : 'Turn the lamp off (switch to dark mode)'}
+      aria-label={
+        isDark
+          ? 'Turn the lamp on (switch to light mode)'
+          : 'Turn the lamp off (switch to dark mode)'
+      }
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       className={railButtonClass()}
     >

@@ -15,11 +15,10 @@ const projects = [
     summary:
       'An AI-assisted course-planning and mastery-based-practice platform for university instruction, advised by Prof. Diba Mirza. I own two pieces of it: a project-management ticket tracker for the team\u2019s Software Engineering and AI groups, and a redesign of the LeetCode Autograder\u2019s student submission flow and feedback interface.',
     outcome:
-      'Outcome: presented and published in the Proceedings of the 31st ACM Conference on Innovation and Technology in Computer Science Education (ITiCSE \u201926); launches fall 2026 in UCSB\u2019s CS8 and CS24 intro courses (250+ students/quarter).',
+      'Presented and published in the Proceedings of ITiCSE \u201926; launches fall 2026 in UCSB\u2019s CS8 and CS24 intro courses (250+ students/quarter).',
     stack: ['React', 'FastAPI', 'AI/LLM'],
     image: '/images/project-caliber.png',
     href: '#',
-    tilt: '-rotate-1',
     caseStudy: {
       problem:
         'The Caliber team was growing across two groups (Software Engineering and AI) with no shared way to see who owned what. Work was getting tracked informally, which made it hard to tell what was in progress, blocked, or done. Separately, the LeetCode Autograder gave students a flat pass/fail with no breakdown of what actually went wrong.',
@@ -38,11 +37,10 @@ const projects = [
     summary:
       'An account-less volunteer scheduling platform for UCSB SciTrek\u2019s K-12 outreach program, with a three-role UX (participant, admin, organizer) and quarterly CSV module imports. Built to replace SignupGenius with something mobile-optimized and ad-free.',
     outcome:
-      'Outcome: waitlist auto-promotion, scheduled reminder emails, and slot swaps. Now sole maintainer heading into a full-quarter dry run ahead of a program-wide launch this fall.',
+      'Waitlist auto-promotion, scheduled reminder emails, and slot swaps. Now sole maintainer heading into a full-quarter dry run ahead of a program-wide launch this fall.',
     stack: ['FastAPI', 'PostgreSQL', 'Celery/Redis', 'React', 'Vite'],
     image: '/images/project-scitrek.png',
     href: 'https://github.com/Anteater10/uni-volunteer-scheduler',
-    tilt: 'rotate-1',
   },
   {
     name: 'KIT: Kitchen Inventory Tracking',
@@ -51,11 +49,10 @@ const projects = [
     summary:
       'A cross-platform mobile app for real-time kitchen inventory management, built from scratch with a 7-person team. I ranked #3 on the team by commit volume and owned the home dashboard, notifications, and environmental-impact scoring for food waste.',
     outcome:
-      'Outcome: OCR receipt scanning and barcode lookup cut manual item entry to near-zero, backed by Supabase for storage and auth.',
+      'OCR receipt scanning and barcode lookup cut manual item entry to near-zero, backed by Supabase for storage and auth.',
     stack: ['React Native', 'Expo', 'FastAPI', 'Supabase'],
     image: '/images/project-ucsb-dining.png',
     href: 'https://github.com/ucsb-cs184-w26/team12-KIT',
-    tilt: '-rotate-1',
   },
   {
     name: 'UCSB Project Dining',
@@ -64,11 +61,10 @@ const projects = [
     summary:
       'Extended a legacy UCSB dining-menu web app with new backend and frontend features. I ran biweekly retros and standups, led code reviews, and resolved merge conflicts for the team.',
     outcome:
-      'Outcome: introduced a same-day PR-review norm that eliminated the review backlogs we\u2019d hit on a prior project \u2014 delivered 100% of committed work on schedule.',
+      'Introduced a same-day PR-review norm that eliminated the review backlogs we\u2019d hit on a prior project \u2014 delivered 100% of committed work on schedule.',
     stack: ['React', 'Spring Boot'],
     image: '/images/project-kit.png',
     href: 'https://github.com/ucsb-cs156-f25/proj-dining-f25-05',
-    tilt: 'rotate-1',
   },
   {
     name: 'yunie: Productivity Agent',
@@ -77,16 +73,122 @@ const projects = [
     summary:
       'An AI-powered assistant enabling conversational task management, context-aware reminders, intelligent scheduling, and dynamic goal tracking.',
     outcome:
-      'Outcome: full-stack, with persistent chat history and secure auth built in.',
+      'Full-stack, with persistent chat history and secure auth built in.',
     stack: ['React', 'Node.js', 'OpenAI API'],
     image: '/images/project-yunie.png',
     href: '#',
-    tilt: '-rotate-1',
   },
 ]
 
+const skillGroups = [
+  {
+    label: 'Languages',
+    items: ['C++', 'Python', 'JavaScript', 'HTML/CSS', 'SQL'],
+    direction: 'left' as const,
+    speed: 26,
+  },
+  {
+    label: 'Frameworks & Tools',
+    items: [
+      'React',
+      'React Native',
+      'Flutter',
+      'Node.js',
+      'FastAPI',
+      'Supabase',
+      'OpenAI API',
+      'Git/GitHub',
+      'Webflow',
+      'Figma',
+      'Cypress',
+    ],
+    direction: 'right' as const,
+    speed: 42,
+  },
+  {
+    label: 'Project Management',
+    items: [
+      'Agile/Scrum',
+      'Sprint Planning',
+      'Risk Management',
+      'Documentation & Reporting',
+      'Notion',
+      'Smartsheet',
+      'ClickUp',
+      'Jira',
+    ],
+    direction: 'left' as const,
+    speed: 34,
+  },
+]
+
+/**
+ * One horizontally-scrolling row of skill chips. The item list is
+ * duplicated enough times to comfortably overflow the lane — short
+ * lists (like Languages) get more copies so the track never runs out
+ * of content and shows dead space before looping. Direction alternates
+ * per row (left/right) so the whole card feels like a quiet conveyor
+ * rather than one flat scroll.
+ */
+function MarqueeRow({
+  label,
+  items,
+  direction,
+  speed,
+}: {
+  label: string
+  items: string[]
+  direction: 'left' | 'right'
+  speed: number
+}) {
+  const copies = items.length <= 6 ? 4 : items.length <= 9 ? 3 : 2
+  const distance = `-${100 / copies}%`
+
+  return (
+    <div className="flex items-center gap-4">
+      <p className="eyebrow w-24 shrink-0 text-muted-foreground sm:w-28">
+        {label}
+      </p>
+      <div
+        className="skills-marquee-mask relative flex-1 overflow-hidden"
+        style={{
+          ['--marquee-duration' as string]: `${speed}s`,
+          ['--marquee-distance' as string]: distance,
+        }}
+      >
+        <div
+          className={
+            direction === 'left'
+              ? 'skills-marquee-track skills-marquee-left'
+              : 'skills-marquee-track skills-marquee-right'
+          }
+        >
+          {Array.from({ length: copies }).map((_, copy) => (
+            <div
+              key={copy}
+              aria-hidden={copy !== 0}
+              className="flex shrink-0 items-center gap-2 pr-2"
+            >
+              {items.map((item) => (
+                <span
+                  key={item}
+                  className="whitespace-nowrap rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-xs text-foreground/85"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function FeaturedProjects() {
   const [openCaseStudy, setOpenCaseStudy] = useState(false)
+  const [hovered, setHovered] = useState<number | null>(null)
+  const [active, setActive] = useState<number | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement | null>(null)
   const caliber = projects[0]
 
@@ -108,80 +210,92 @@ export function FeaturedProjects() {
   return (
     <section
       id="projects"
-      className="relative scroll-mt-8 overflow-hidden py-20 sm:py-28"
+      className="relative scroll-mt-8 overflow-hidden bg-secondary py-14 sm:py-20"
     >
       <ParallaxBackdrop variant="seabreeze" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
-            index="02"
+            index="01"
             title="Featured projects"
-            note="what changed because of it"
+            note="hover a card to open it"
           />
         </Reveal>
 
-        <ul className="mt-10 flex flex-col gap-8 sm:mt-12">
-          {projects.map((project, index) => (
-            <li key={project.name}>
-              <Reveal delay={index * 80}>
-                <PaperCard
-                  className={`group flex flex-col gap-6 p-5 transition-transform duration-300 hover:-translate-y-1 sm:flex-row sm:p-6 ${project.tilt} hover:rotate-0`}
-                >
-                  <Tape
-                    className="-top-3 left-10 -rotate-2"
-                    label={`0${index + 1}`}
-                  />
+        {/* Desktop / tablet: horizontal expanding gallery, CR7-style —
+            narrow image columns that grow into a full info panel on
+            hover, while the rest compress to make room. */}
+        <div className="mt-8 hidden h-[540px] gap-2.5 sm:mt-10 sm:flex">
+          {projects.map((project, index) => {
+            const isOpen = hovered === index || active === index
+            const isCompressed =
+              (hovered !== null && hovered !== index) ||
+              (hovered === null && active !== null && active !== index)
 
-                  <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden rounded-sm bg-muted sm:aspect-square sm:w-52">
-                    <Image
-                      src={project.image}
-                      alt={`Placeholder artwork for ${project.name}`}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 208px"
-                      loading={index === 0 ? 'eager' : 'lazy'}
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
+            return (
+              <div
+                key={project.name}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isOpen}
+                onMouseEnter={() => setHovered(index)}
+                onMouseLeave={() => setHovered(null)}
+                onFocus={() => setHovered(index)}
+                onBlur={() => setHovered(null)}
+                onClick={() =>
+                  setActive((prev) => (prev === index ? null : index))
+                }
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setActive((prev) => (prev === index ? null : index))
+                  }
+                }}
+                style={{ flexGrow: isOpen ? 5 : isCompressed ? 0.55 : 1 }}
+                className="paper-edge group relative min-w-0 cursor-pointer overflow-hidden rounded-sm bg-muted outline-none transition-[flex-grow] duration-500 ease-out focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Image
+                  src={project.image}
+                  alt={`Placeholder artwork for ${project.name}`}
+                  fill
+                  sizes="(max-width: 1024px) 40vw, 420px"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
 
-                  <div className="flex flex-col gap-2.5">
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                      <h3 className="display text-2xl">{project.name}</h3>
-                      <p className="eyebrow text-muted-foreground">
-                        {project.role}
-                      </p>
-                      <span className="rounded-full bg-highlight/60 px-2 py-0.5 eyebrow text-[10px] text-foreground/80">
-                        {project.status}
-                      </span>
-                    </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
-                    <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-                      {project.summary}
-                    </p>
+                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                  <p className="eyebrow text-white/70">{project.role}</p>
+                  <h3 className="display mt-1 text-xl leading-tight text-white sm:text-2xl">
+                    {project.name}
+                  </h3>
 
-                    <p className="max-w-prose border-l-2 border-highlight bg-highlight/25 py-1 pl-3 text-sm leading-relaxed font-medium">
+                  <div
+                    className={
+                      isOpen
+                        ? 'mt-3 flex max-h-56 flex-col gap-3 opacity-100 transition-all duration-500'
+                        : 'pointer-events-none mt-0 flex max-h-0 flex-col gap-3 overflow-hidden opacity-0 transition-all duration-300'
+                    }
+                  >
+                    <span className="w-fit rounded-full bg-white/15 px-2.5 py-1 eyebrow text-[10px] text-white backdrop-blur-sm">
+                      {project.status}
+                    </span>
+                    <p className="text-sm leading-relaxed text-white/85">
                       {project.outcome}
                     </p>
-
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      {project.stack.map((item) => (
-                        <span
-                          key={item}
-                          className="rounded-full border border-border px-2 py-0.5 eyebrow text-[10px] text-muted-foreground"
-                        >
-                          {item}
-                        </span>
-                      ))}
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
                       {project.caseStudy ? (
                         <button
                           type="button"
-                          onClick={() => setOpenCaseStudy(true)}
-                          className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setOpenCaseStudy(true)
+                          }}
+                          className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-foreground transition hover:-translate-y-0.5"
                         >
-                          Read the full story
-                          <ArrowUpRight
-                            className="size-3.5"
-                            aria-hidden="true"
-                          />
+                          Read case study
+                          <ArrowUpRight className="size-3" aria-hidden="true" />
                         </button>
                       ) : null}
                       {project.href !== '#' ? (
@@ -189,26 +303,122 @@ export function FeaturedProjects() {
                           href={project.href}
                           target="_blank"
                           rel="noreferrer noopener"
-                          className="ml-auto inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 rounded-full border border-white/40 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/10"
                         >
-                          View on GitHub
-                          <ArrowUpRight
-                            className="size-3.5"
-                            aria-hidden="true"
-                          />
+                          View GitHub
+                          <ArrowUpRight className="size-3" aria-hidden="true" />
                         </a>
                       ) : (
-                        <span className="ml-auto eyebrow text-muted-foreground/60">
+                        <span className="text-xs text-white/50">
                           link coming soon
                         </span>
                       )}
                     </div>
                   </div>
-                </PaperCard>
-              </Reveal>
-            </li>
-          ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Mobile: hover doesn't exist on touch, so fall back to a
+            simple stacked list — tap the header row to expand a card
+            in place instead of relying on a five-way horizontal squeeze
+            that would be unreadably thin on a phone. */}
+        <ul className="mt-8 flex flex-col gap-3 sm:hidden">
+          {projects.map((project, index) => {
+            const isOpen = active === index
+            return (
+              <li key={project.name}>
+                <div className="paper-edge overflow-hidden rounded-sm bg-muted">
+                  <button
+                    type="button"
+                    onClick={() => setActive(isOpen ? null : index)}
+                    aria-expanded={isOpen}
+                    className="relative block h-40 w-full text-left"
+                  >
+                    <Image
+                      src={project.image}
+                      alt={`Placeholder artwork for ${project.name}`}
+                      fill
+                      sizes="100vw"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4">
+                      <p className="eyebrow text-white/70">{project.role}</p>
+                      <h3 className="display mt-1 text-xl text-white">
+                        {project.name}
+                      </h3>
+                    </div>
+                  </button>
+
+                  {isOpen ? (
+                    <div className="flex flex-col gap-3 bg-card p-4">
+                      <span className="w-fit rounded-full bg-highlight/60 px-2.5 py-1 eyebrow text-[10px] text-foreground/80">
+                        {project.status}
+                      </span>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {project.outcome}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {project.caseStudy ? (
+                          <button
+                            type="button"
+                            onClick={() => setOpenCaseStudy(true)}
+                            className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                          >
+                            Read case study
+                            <ArrowUpRight
+                              className="size-3"
+                              aria-hidden="true"
+                            />
+                          </button>
+                        ) : null}
+                        {project.href !== '#' ? (
+                          <a
+                            href={project.href}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="inline-flex items-center gap-1 rounded-full border border-input px-3 py-1.5 text-xs font-medium"
+                          >
+                            View GitHub
+                            <ArrowUpRight
+                              className="size-3"
+                              aria-hidden="true"
+                            />
+                          </a>
+                        ) : (
+                          <span className="text-xs text-muted-foreground/60">
+                            link coming soon
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </li>
+            )
+          })}
         </ul>
+
+        {/* Toolkit — folded in here instead of its own section/heading.
+            Same scrolling-marquee card as before, just without the
+            "01 Toolkit" title above it. */}
+        <PaperCard className="relative mt-8 flex flex-col gap-4 overflow-hidden p-5 transition-transform duration-300 hover:-translate-y-1 sm:mt-10 sm:p-6">
+          <Tape className="-top-3 right-10 rotate-2" />
+          {skillGroups.map((group) => (
+            <MarqueeRow
+              key={group.label}
+              label={group.label}
+              items={group.items}
+              direction={group.direction}
+              speed={group.speed}
+            />
+          ))}
+        </PaperCard>
 
         {openCaseStudy && caliber.caseStudy ? (
           <div
@@ -266,6 +476,62 @@ export function FeaturedProjects() {
           </div>
         ) : null}
       </div>
+
+      <style>{`
+        .skills-marquee-mask {
+          -webkit-mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 16px,
+            black calc(100% - 16px),
+            transparent
+          );
+          mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 16px,
+            black calc(100% - 16px),
+            transparent
+          );
+        }
+        .skills-marquee-track {
+          display: flex;
+          width: max-content;
+          animation-duration: var(--marquee-duration, 36s);
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+        .skills-marquee-left {
+          animation-name: skills-marquee-scroll-left;
+        }
+        .skills-marquee-right {
+          animation-name: skills-marquee-scroll-right;
+        }
+        .skills-marquee-mask:hover .skills-marquee-track {
+          animation-play-state: paused;
+        }
+        @keyframes skills-marquee-scroll-left {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(var(--marquee-distance, -50%));
+          }
+        }
+        @keyframes skills-marquee-scroll-right {
+          from {
+            transform: translateX(var(--marquee-distance, -50%));
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .skills-marquee-track {
+            animation: none !important;
+          }
+        }
+      `}</style>
     </section>
   )
 }

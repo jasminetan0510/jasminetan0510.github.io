@@ -22,18 +22,18 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="relative scroll-mt-8 overflow-hidden py-20 sm:py-28">
+    <section className="relative scroll-mt-8 overflow-hidden bg-accent py-14 sm:py-20">
       <ParallaxBackdrop variant="cococream" speed={0.16} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
-            index="03"
+            index="02"
             title="What people say"
             note="from the people who worked with me"
           />
         </Reveal>
 
-        <ul className="mt-10 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-3 sm:gap-7">
+        <ul className="mt-8 grid grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-3 sm:gap-7">
           {testimonials.map((t, i) => (
             <li key={i}>
               <Reveal delay={i * 100}>

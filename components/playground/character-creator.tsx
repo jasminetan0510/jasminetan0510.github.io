@@ -2,58 +2,80 @@
 
 import { RotateCcw, Skull } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { CharacterAvatar } from '@/components/character-avatar'
 import {
-  ACCESSORY_OPTIONS,
-  BASE_OPTIONS,
-  HAIR_OPTIONS,
-  OUTFIT_OPTIONS,
+  DEFAULT_HAIR_BY_BASE,
+  EYE_COLORS,
+  HAIR_STYLES,
+  SHIRT_COLORS,
   clearCharacters,
   loadCharacters,
   saveCharacter,
+  type BaseGender,
 } from '@/lib/characters'
 import { cn } from '@/lib/utils'
 
-type LayerName = 'base' | 'hair' | 'outfit' | 'accessory'
-
-function SwatchRow({
+function ColorSwatchRow({
   label,
-  options,
+  colors,
   selected,
   onSelect,
 }: {
   label: string
-  options: (string | null)[]
-  selected: number
-  onSelect: (index: number) => void
+  colors: readonly string[]
+  selected: string
+  onSelect: (color: string) => void
 }) {
   return (
     <div className="flex flex-col gap-2">
       <p className="eyebrow text-muted-foreground">{label}</p>
       <div className="flex flex-wrap gap-2">
-        {options.map((src, i) => (
+        {colors.map((color) => (
           <button
-            key={i}
+            key={color}
+            type="button"
+            onClick={() => onSelect(color)}
+            aria-pressed={selected === color}
+            aria-label={`${label}: ${color}`}
+            style={{ backgroundColor: color }}
+            className={cn(
+              'size-9 rounded-full border-2 transition-transform',
+              selected === color
+                ? 'border-primary scale-110 ring-2 ring-ring'
+                : 'border-border hover:scale-105',
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function HairStyleRow({
+  selected,
+  onSelect,
+}: {
+  selected: number
+  onSelect: (index: number) => void
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="eyebrow text-muted-foreground">Hair</p>
+      <div className="flex flex-wrap gap-2">
+        {HAIR_STYLES.map((style, i) => (
+          <button
+            key={style.label}
             type="button"
             onClick={() => onSelect(i)}
             aria-pressed={selected === i}
-            aria-label={src ? `${label} option ${i}` : `No ${label.toLowerCase()}`}
             className={cn(
-              'flex size-11 items-center justify-center rounded-sm border bg-card transition-colors',
+              'rounded-full border px-3 py-1.5 text-sm transition-colors',
               selected === i
-                ? 'border-primary ring-2 ring-ring'
-                : 'border-border hover:bg-secondary',
+                ? 'border-transparent bg-foreground text-background'
+                : 'border-input hover:bg-secondary',
             )}
           >
-            {src ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={src}
-                alt=""
-                className="size-8 [image-rendering:pixelated]"
-              />
-            ) : (
-              <span className="text-xs text-muted-foreground">none</span>
-            )}
+            {style.label}
           </button>
         ))}
       </div>
@@ -62,12 +84,11 @@ function SwatchRow({
 }
 
 export function CharacterCreator() {
-  const [layers, setLayers] = useState<Record<LayerName, number>>({
-    base: 0,
-    hair: 1,
-    outfit: 0,
-    accessory: 0,
-  })
+  const [base, setBase] = useState<BaseGender>('female')
+  const [hair, setHair] = useState(DEFAULT_HAIR_BY_BASE.female)
+  const [shirtColor, setShirtColor] = useState<string>(SHIRT_COLORS[0])
+  const [eyeColor, setEyeColor] = useState<string>(EYE_COLORS[0])
+
   const [saved, setSaved] = useState(false)
   const [characterCount, setCharacterCount] = useState(0)
   const [destructArmed, setDestructArmed] = useState(false)
@@ -85,9 +106,10 @@ export function CharacterCreator() {
   function handleDestruct() {
     if (!destructArmed) {
       setDestructArmed(true)
-      // Auto-disarm after a few seconds so an accidental second click
-      // later (unrelated to this) can't trigger a delete.
-      armedTimeoutRef.current = window.setTimeout(() => setDestructArmed(false), 4000)
+      armedTimeoutRef.current = window.setTimeout(
+        () => setDestructArmed(false),
+        4000,
+      )
       return
     }
     if (armedTimeoutRef.current) window.clearTimeout(armedTimeoutRef.current)
@@ -95,85 +117,85 @@ export function CharacterCreator() {
     setDestructArmed(false)
   }
 
-  function setLayer(name: LayerName, index: number) {
-    setLayers((prev) => ({ ...prev, [name]: index }))
+  function handleBaseChange(next: BaseGender) {
+    setBase(next)
+    setHair(DEFAULT_HAIR_BY_BASE[next])
     setSaved(false)
   }
 
   function randomize() {
-    setLayers({
-      base: Math.floor(Math.random() * BASE_OPTIONS.length),
-      hair: Math.floor(Math.random() * HAIR_OPTIONS.length),
-      outfit: Math.floor(Math.random() * OUTFIT_OPTIONS.length),
-      accessory: Math.floor(Math.random() * ACCESSORY_OPTIONS.length),
-    })
+    const nextBase: BaseGender = Math.random() < 0.5 ? 'female' : 'male'
+    setBase(nextBase)
+    setHair(Math.floor(Math.random() * HAIR_STYLES.length))
+    setShirtColor(SHIRT_COLORS[Math.floor(Math.random() * SHIRT_COLORS.length)])
+    setEyeColor(EYE_COLORS[Math.floor(Math.random() * EYE_COLORS.length)])
     setSaved(false)
   }
 
   function handleSave() {
-    saveCharacter(layers)
+    saveCharacter({ base, hair, shirtColor, eyeColor })
     setSaved(true)
   }
-
-  const previewLayers = [
-    BASE_OPTIONS[layers.base],
-    OUTFIT_OPTIONS[layers.outfit],
-    HAIR_OPTIONS[layers.hair],
-    ACCESSORY_OPTIONS[layers.accessory],
-  ].filter((src): src is string => Boolean(src))
 
   return (
     <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
       {/* Live preview */}
       <div className="flex shrink-0 flex-col items-center gap-3">
-        <div className="relative size-32 overflow-hidden rounded-sm border border-dashed border-input bg-secondary/60">
-          {previewLayers.map((src) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={src}
-              src={src}
-              alt=""
-              className="absolute inset-0 size-full [image-rendering:pixelated]"
-            />
-          ))}
+        <div className="flex size-44 items-center justify-center rounded-sm border border-dashed border-input bg-secondary/60">
+          <CharacterAvatar
+            base={base}
+            hair={hair}
+            shirtColor={shirtColor}
+            eyeColor={eyeColor}
+            size={110}
+          />
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={randomize}
-            className="inline-flex items-center gap-1.5 rounded-full border border-input px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
-          >
-            <RotateCcw className="size-3" aria-hidden="true" />
-            Randomize
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={randomize}
+          className="inline-flex items-center gap-1.5 rounded-full border border-input px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
+        >
+          <RotateCcw className="size-3" aria-hidden="true" />
+          Randomize
+        </button>
       </div>
 
       {/* Customization controls */}
       <div className="flex flex-1 flex-col gap-4">
-        <SwatchRow
-          label="Skin tone"
-          options={BASE_OPTIONS}
-          selected={layers.base}
-          onSelect={(i) => setLayer('base', i)}
+        <div className="flex flex-col gap-2">
+          <p className="eyebrow text-muted-foreground">Base</p>
+          <div className="flex gap-2">
+            {(['female', 'male'] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => handleBaseChange(option)}
+                aria-pressed={base === option}
+                className={cn(
+                  'rounded-full border px-4 py-1.5 text-sm capitalize transition-colors',
+                  base === option
+                    ? 'border-transparent bg-foreground text-background'
+                    : 'border-input hover:bg-secondary',
+                )}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <HairStyleRow selected={hair} onSelect={setHair} />
+        <ColorSwatchRow
+          label="Shirt color"
+          colors={SHIRT_COLORS}
+          selected={shirtColor}
+          onSelect={setShirtColor}
         />
-        <SwatchRow
-          label="Hair"
-          options={HAIR_OPTIONS}
-          selected={layers.hair}
-          onSelect={(i) => setLayer('hair', i)}
-        />
-        <SwatchRow
-          label="Outfit"
-          options={OUTFIT_OPTIONS}
-          selected={layers.outfit}
-          onSelect={(i) => setLayer('outfit', i)}
-        />
-        <SwatchRow
-          label="Accessory"
-          options={ACCESSORY_OPTIONS}
-          selected={layers.accessory}
-          onSelect={(i) => setLayer('accessory', i)}
+        <ColorSwatchRow
+          label="Eye color"
+          colors={EYE_COLORS}
+          selected={eyeColor}
+          onSelect={setEyeColor}
         />
 
         <button
@@ -181,7 +203,9 @@ export function CharacterCreator() {
           onClick={handleSave}
           className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:scale-95"
         >
-          {saved ? 'Saved — look at the bottom of the page!' : 'Save my character'}
+          {saved
+            ? 'Saved — look at the bottom of the page!'
+            : 'Save my character'}
         </button>
 
         {characterCount > 0 ? (

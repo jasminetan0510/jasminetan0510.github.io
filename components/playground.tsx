@@ -52,25 +52,22 @@ export function Playground() {
   const activeTab = tabs.find((tab) => tab.id === active) ?? tabs[0]
 
   return (
-    <section id="playground" className="relative scroll-mt-8 overflow-hidden">
-      <ParallaxBackdrop variant="cococream" speed={0.2} />
+    <section
+      id="playground"
+      className="relative scroll-mt-8 overflow-hidden bg-[#e5edf0]"
+    >
+      <ParallaxBackdrop variant="seabreeze" speed={0.2} />
 
-      <div className="relative mx-auto w-full max-w-5xl px-5 py-20 sm:px-8 sm:py-28">
+      <div className="relative mx-auto w-full max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
         <Reveal>
-          {/* Dark backdrop behind this section, so the heading sits on its
-              own light panel rather than directly on the dark background
-              (SectionHeading's text colors are tuned for light backgrounds
-              elsewhere on the site). */}
-          <div className="rounded-2xl bg-background/95 px-5 py-5 shadow-[0_8px_30px_-12px_rgb(0,0,0,0.35)] backdrop-blur-sm sm:px-6 sm:py-6">
-            <SectionHeading
-              index="05"
-              title={<CarouselText text="Playground" />}
-              note="little things I build to think"
-            />
-          </div>
+          <SectionHeading
+            index="04"
+            title={<CarouselText text="Playground" />}
+            note="little things I build to think"
+          />
         </Reveal>
 
-        <PaperCard className="mt-10 p-5 sm:mt-12 sm:p-8">
+        <PaperCard className="mt-8 p-5 sm:mt-10 sm:p-8">
           <Tape className="-top-3 left-8 -rotate-3" label="wip" />
           <Tape className="-top-3 right-10 rotate-2" />
 

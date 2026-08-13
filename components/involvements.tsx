@@ -73,19 +73,19 @@ export function Involvements() {
   return (
     <section
       id="involvements"
-      className="relative scroll-mt-8 overflow-hidden py-20 sm:py-28"
+      className="relative scroll-mt-8 overflow-hidden bg-secondary py-14 sm:py-20"
     >
       <ParallaxBackdrop variant="seabreeze" speed={0.16} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
-            index="04"
+            index="03"
             title="My involvements"
             note="outside the classroom"
           />
         </Reveal>
 
-        <PaperCard className="mt-10 overflow-hidden p-5 sm:mt-12 sm:p-8">
+        <PaperCard className="mt-8 overflow-hidden p-5 sm:mt-10 sm:p-8">
           <Tape className="-top-3 left-10 -rotate-2" label="+" />
 
           <div

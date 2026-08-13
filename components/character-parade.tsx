@@ -1,78 +1,118 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import {
-  ACCESSORY_OPTIONS,
-  BASE_OPTIONS,
-  HAIR_OPTIONS,
-  OUTFIT_OPTIONS,
-  loadCharacters,
-  type Character,
-} from '@/lib/characters'
+import { useEffect, useMemo, useState } from 'react'
+import { CharacterAvatar, AVATAR_ASPECT } from '@/components/character-avatar'
+import { loadCharacters, type Character } from '@/lib/characters'
 
-// Deterministic-ish pseudo-random per character, based on its id, so the
-// same character always gets the same speed/lane instead of re-randomizing
-// (and jumping around) on every re-render.
-function hashToRange(id: string, min: number, max: number) {
+const CHAR_SIZE = 64 // px — was 40, sized up per request
+const CHAR_HEIGHT = CHAR_SIZE * AVATAR_ASPECT
+const GAP = 22 // px — minimum breathing room between characters
+const SLOT_WIDTH = CHAR_SIZE + GAP
+
+// Deterministic-ish pseudo-random per seed, so layout and timing stay
+// stable across re-renders instead of reshuffling on every render.
+function hashToRange(seed: string, min: number, max: number) {
   let hash = 0
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash * 31 + id.charCodeAt(i)) % 100000
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) % 100000
   }
   const t = hash / 100000
   return min + t * (max - min)
 }
 
-function WalkingCharacter({ character }: { character: Character }) {
-  const duration = hashToRange(character.id, 14, 26) // seconds to cross the screen
-  const delay = -hashToRange(character.id + 'd', 0, duration) // negative = starts mid-walk, staggered
-  const bottomOffset = hashToRange(character.id + 'b', 0, 14) // px, avoids a perfectly flat row
-  const size = 40 // px
+type PlacedCharacter = Character & { left: number }
 
-  const layers = [
-    BASE_OPTIONS[character.base],
-    OUTFIT_OPTIONS[character.outfit],
-    HAIR_OPTIONS[character.hair],
-    ACCESSORY_OPTIONS[character.accessory],
-  ].filter((src): src is string => Boolean(src))
+/**
+ * Assigns each character a horizontal slot with guaranteed spacing.
+ * Each character's id picks a *preferred* slot (so it doesn't jump around
+ * between renders); if that slot's taken, it linear-probes forward to the
+ * next free one. Slots are `SLOT_WIDTH` apart, so two characters can never
+ * overlap regardless of how many are added.
+ */
+function placeCharacters(
+  characters: Character[],
+  containerWidth: number,
+): PlacedCharacter[] {
+  if (containerWidth <= 0) return []
+  const totalSlots = Math.max(1, Math.floor(containerWidth / SLOT_WIDTH))
+  const taken = new Set<number>()
+
+  return characters.map((character) => {
+    const preferred = Math.floor(hashToRange(character.id, 0, totalSlots))
+    let slot = preferred
+    let attempts = 0
+    while (taken.has(slot) && attempts < totalSlots) {
+      slot = (slot + 1) % totalSlots
+      attempts++
+    }
+    taken.add(slot)
+    return { ...character, left: slot * SLOT_WIDTH }
+  })
+}
+
+function IdleCharacter({
+  character,
+  reducedMotion,
+}: {
+  character: PlacedCharacter
+  reducedMotion: boolean
+}) {
+  // Each character hops at its own speed and on its own offset, so the
+  // whole row doesn't bounce in unison — reads as more alive.
+  const duration = hashToRange(character.id + 'dur', 1.6, 2.6)
+  const delay = -hashToRange(character.id + 'delay', 0, duration)
+  const hopHeight = hashToRange(character.id + 'hop', 6, 12)
 
   return (
     <div
-      className="pointer-events-none absolute"
+      className="absolute bottom-0"
       style={{
-        bottom: `${bottomOffset}px`,
-        left: `-${size}px`,
-        width: size,
-        height: size,
-        animation: `walk-across ${duration}s linear infinite`,
-        animationDelay: `${delay}s`,
+        left: character.left,
+        width: CHAR_SIZE,
+        height: CHAR_HEIGHT,
+        animation: reducedMotion
+          ? undefined
+          : `character-bounce ${duration}s ease-in-out infinite`,
+        animationDelay: reducedMotion ? undefined : `${delay}s`,
+        ['--hop-height' as string]: `-${hopHeight}px`,
       }}
     >
-      {layers.map((src) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={src}
-          src={src}
-          alt=""
-          className="absolute inset-0 size-full [image-rendering:pixelated]"
-        />
-      ))}
+      <CharacterAvatar
+        base={character.base}
+        hair={character.hair}
+        shirtColor={character.shirtColor}
+        eyeColor={character.eyeColor}
+        size={CHAR_SIZE}
+      />
     </div>
   )
 }
 
 /**
- * Fixed strip along the bottom of the viewport. Reads saved characters from
- * localStorage (per-visitor collection — see lib/characters.ts) and animates
- * each one walking left to right on a loop. Listens for the
- * 'characters-updated' event so a newly saved character appears immediately.
+ * Meant to be rendered inside SiteFooter, near the bottom — not a
+ * page-wide fixed overlay anymore. Reads saved characters from
+ * localStorage (see lib/characters.ts) and idles each one in place with a
+ * small staggered hop. New characters claim a random horizontal slot
+ * that's guaranteed not to overlap an existing one (see placeCharacters
+ * above). Listens for the 'characters-updated' event so a freshly saved
+ * character appears immediately, no reload needed.
  */
 export function CharacterParade() {
+  // A plain useRef + effect-with-empty-deps only ever attaches the
+  // observer on the very first render — but this component returns null
+  // (rendering no container div at all) until a character exists, so
+  // that first render often has nothing to attach to. Tracking the node
+  // in state instead means the effect below re-fires whenever the div
+  // actually mounts, whichever render that ends up being.
+  const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(
+    null,
+  )
   const [characters, setCharacters] = useState<Character[]>([])
+  const [containerWidth, setContainerWidth] = useState(0)
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
     setCharacters(loadCharacters())
-
     function refresh() {
       setCharacters(loadCharacters())
     }
@@ -80,50 +120,51 @@ export function CharacterParade() {
 
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReducedMotion(mq.matches)
-    const onChange = () => setReducedMotion(mq.matches)
-    mq.addEventListener('change', onChange)
+    const onMotionChange = () => setReducedMotion(mq.matches)
+    mq.addEventListener('change', onMotionChange)
 
     return () => {
       window.removeEventListener('characters-updated', refresh)
-      mq.removeEventListener('change', onChange)
+      mq.removeEventListener('change', onMotionChange)
     }
   }, [])
+
+  useEffect(() => {
+    if (!containerNode) return
+    const observer = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width)
+    })
+    observer.observe(containerNode)
+    return () => observer.disconnect()
+  }, [containerNode])
+
+  const placed = useMemo(
+    () => placeCharacters(characters, containerWidth),
+    [characters, containerWidth],
+  )
 
   if (characters.length === 0) return null
 
   return (
     <div
+      ref={setContainerNode}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 h-14 overflow-hidden"
+      className="pointer-events-none relative h-24 w-full overflow-hidden sm:h-28"
     >
-      {reducedMotion ? (
-        // Reduced motion: show them standing still in a row instead of animating.
-        <div className="flex items-end gap-3 p-2">
-          {characters.map((c) => {
-            const layers = [
-              BASE_OPTIONS[c.base],
-              OUTFIT_OPTIONS[c.outfit],
-              HAIR_OPTIONS[c.hair],
-              ACCESSORY_OPTIONS[c.accessory],
-            ].filter((src): src is string => Boolean(src))
-            return (
-              <div key={c.id} className="relative size-10">
-                {layers.map((src) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={src}
-                    src={src}
-                    alt=""
-                    className="absolute inset-0 size-full [image-rendering:pixelated]"
-                  />
-                ))}
-              </div>
-            )
-          })}
-        </div>
-      ) : (
-        characters.map((c) => <WalkingCharacter key={c.id} character={c} />)
-      )}
+      {placed.map((c) => (
+        <IdleCharacter key={c.id} character={c} reducedMotion={reducedMotion} />
+      ))}
+
+      <style>{`
+        @keyframes character-bounce {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(var(--hop-height, -8px));
+          }
+        }
+      `}</style>
     </div>
   )
 }

@@ -115,25 +115,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* TODO: replace with your downloaded wrinkled-paper image at this path */
-    background-image: url('/images/paper-texture.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    /* In dark mode the same texture blends into the dark background color
-       instead of needing a separate dark image. */
-    background-blend-mode: multiply;
     transition:
       background-color 0.3s ease,
       color 0.3s ease;
-  }
-
-  /* Dark mode uses its own background image instead of the light-mode
-     texture. TODO: add your dark-mode image at this path. */
-  .dark body {
-    background-image: url('/images/paper-texture-dark.jpg');
-    background-blend-mode: normal;
   }
 }
 

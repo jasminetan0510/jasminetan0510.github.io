@@ -1,8 +1,7 @@
 import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
+import { ParallaxBackdrop } from '@/components/parallax-backdrop'
 
-// Real quotes from peer/teammate evaluations. Attributed by project since
-// the original feedback was unnamed/anonymized — do not invent names.
 const testimonials = [
   {
     quote:
@@ -23,34 +22,37 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="mx-auto w-full max-w-5xl scroll-mt-8 px-5 py-16 sm:px-8">
-      <Reveal>
-        <SectionHeading
-          index="03"
-          title="What people say"
-          note="from the people who worked with me"
-        />
-      </Reveal>
+    <section className="relative scroll-mt-8 overflow-hidden py-20 sm:py-28">
+      <ParallaxBackdrop variant="cococream" speed={0.16} />
+      <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
+        <Reveal>
+          <SectionHeading
+            index="03"
+            title="What people say"
+            note="from the people who worked with me"
+          />
+        </Reveal>
 
-      <ul className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
-        {testimonials.map((t, i) => (
-          <li key={i}>
-            <Reveal delay={i * 100}>
-            <PaperCard className="relative flex h-full flex-col gap-3 p-5 transition-transform duration-300 hover:-translate-y-1">
-              {i === 0 ? (
-                <Tape className="-top-3 left-8 -rotate-2" label="real" />
-              ) : null}
-              <p className="text-sm leading-relaxed text-foreground/85">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <p className="mt-auto eyebrow text-muted-foreground">
-                {t.source}
-              </p>
-            </PaperCard>
-            </Reveal>
-          </li>
-        ))}
-      </ul>
+        <ul className="mt-10 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-3 sm:gap-7">
+          {testimonials.map((t, i) => (
+            <li key={i}>
+              <Reveal delay={i * 100}>
+                <PaperCard className="relative flex h-full flex-col gap-3 p-6 transition-transform duration-300 hover:-translate-y-1">
+                  {i === 0 ? (
+                    <Tape className="-top-3 left-8 -rotate-2" label="real" />
+                  ) : null}
+                  <p className="text-sm leading-relaxed text-foreground/85">
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                  <p className="mt-auto eyebrow text-muted-foreground">
+                    {t.source}
+                  </p>
+                </PaperCard>
+              </Reveal>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   )
 }

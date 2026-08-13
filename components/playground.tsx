@@ -7,7 +7,13 @@ import { BoredButton } from '@/components/playground/bored-button'
 import { CharacterCreator } from '@/components/playground/character-creator'
 import { StickerBoard } from '@/components/playground/sticker-board'
 import { TypingTest } from '@/components/playground/typing-test'
-import { CarouselText, PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
+import { ParallaxBackdrop } from '@/components/parallax-backdrop'
+import {
+  CarouselText,
+  PaperCard,
+  SectionHeading,
+  Tape,
+} from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
 
@@ -36,7 +42,8 @@ const tabs: { id: TabId; label: string; Icon: LucideIcon; blurb: string }[] = [
     id: 'character',
     label: 'Make a character',
     Icon: UserRoundPlus,
-    blurb: 'Design a little pixel character and save it — it\u2019ll join the others walking at the bottom of the page.',
+    blurb:
+      'Design a little pixel character and save it — it\u2019ll join the others walking at the bottom of the page.',
   },
 ]
 
@@ -45,63 +52,72 @@ export function Playground() {
   const activeTab = tabs.find((tab) => tab.id === active) ?? tabs[0]
 
   return (
-    <section
-      id="playground"
-      className="mx-auto w-full max-w-5xl scroll-mt-8 px-5 py-16 sm:px-8"
-    >
-      <Reveal>
-        <SectionHeading
-          index="05"
-          title={<CarouselText text="Playground" />}
-          note="little things I build to think"
-        />
-      </Reveal>
+    <section id="playground" className="relative scroll-mt-8 overflow-hidden">
+      <ParallaxBackdrop variant="cococream" speed={0.2} />
 
-      <PaperCard className="mt-8 p-4 sm:p-6">
-        <Tape className="-top-3 left-8 -rotate-3" label="wip" />
-        <Tape className="-top-3 right-10 rotate-2" />
+      <div className="relative mx-auto w-full max-w-5xl px-5 py-20 sm:px-8 sm:py-28">
+        <Reveal>
+          {/* Dark backdrop behind this section, so the heading sits on its
+              own light panel rather than directly on the dark background
+              (SectionHeading's text colors are tuned for light backgrounds
+              elsewhere on the site). */}
+          <div className="rounded-2xl bg-background/95 px-5 py-5 shadow-[0_8px_30px_-12px_rgb(0,0,0,0.35)] backdrop-blur-sm sm:px-6 sm:py-6">
+            <SectionHeading
+              index="05"
+              title={<CarouselText text="Playground" />}
+              note="little things I build to think"
+            />
+          </div>
+        </Reveal>
 
-        <div
-          role="tablist"
-          aria-label="Playground experiments"
-          className="flex flex-wrap gap-2"
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              role="tab"
-              type="button"
-              id={`tab-${tab.id}`}
-              aria-selected={active === tab.id}
-              aria-controls={`panel-${tab.id}`}
-              onClick={() => setActive(tab.id)}
-              className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors',
-                active === tab.id
-                  ? 'border-transparent bg-foreground text-background'
-                  : 'border-input hover:bg-secondary',
-              )}
-            >
-              <tab.Icon className="size-4" aria-hidden="true" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <PaperCard className="mt-10 p-5 sm:mt-12 sm:p-8">
+          <Tape className="-top-3 left-8 -rotate-3" label="wip" />
+          <Tape className="-top-3 right-10 rotate-2" />
 
-        <p className="mt-4 text-sm text-muted-foreground">{activeTab.blurb}</p>
+          <div
+            role="tablist"
+            aria-label="Playground experiments"
+            className="flex flex-wrap gap-2"
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                role="tab"
+                type="button"
+                id={`tab-${tab.id}`}
+                aria-selected={active === tab.id}
+                aria-controls={`panel-${tab.id}`}
+                onClick={() => setActive(tab.id)}
+                className={cn(
+                  'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors',
+                  active === tab.id
+                    ? 'border-transparent bg-foreground text-background'
+                    : 'border-input hover:bg-secondary',
+                )}
+              >
+                <tab.Icon className="size-4" aria-hidden="true" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        <div
-          role="tabpanel"
-          id={`panel-${active}`}
-          aria-labelledby={`tab-${active}`}
-          className="mt-4"
-        >
-          {active === 'stickers' ? <StickerBoard /> : null}
-          {active === 'typing' ? <TypingTest /> : null}
-          {active === 'bored' ? <BoredButton /> : null}
-          {active === 'character' ? <CharacterCreator /> : null}
-        </div>
-      </PaperCard>
+          <p className="mt-4 text-sm text-muted-foreground">
+            {activeTab.blurb}
+          </p>
+
+          <div
+            role="tabpanel"
+            id={`panel-${active}`}
+            aria-labelledby={`tab-${active}`}
+            className="mt-4"
+          >
+            {active === 'stickers' ? <StickerBoard /> : null}
+            {active === 'typing' ? <TypingTest /> : null}
+            {active === 'bored' ? <BoredButton /> : null}
+            {active === 'character' ? <CharacterCreator /> : null}
+          </div>
+        </PaperCard>
+      </div>
     </section>
   )
 }

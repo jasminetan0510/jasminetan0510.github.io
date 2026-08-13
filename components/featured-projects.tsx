@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
+import { ParallaxBackdrop } from '@/components/parallax-backdrop'
 
 const projects = [
   {
@@ -17,12 +18,8 @@ const projects = [
       'Outcome: presented and published in the Proceedings of the 31st ACM Conference on Innovation and Technology in Computer Science Education (ITiCSE \u201926); launches fall 2026 in UCSB\u2019s CS8 and CS24 intro courses (250+ students/quarter).',
     stack: ['React', 'FastAPI', 'AI/LLM'],
     image: '/images/project-caliber.png',
-    // TODO: add the real repo link once you have it (private research repo?)
     href: '#',
     tilt: '-rotate-1',
-    // Case study — only Caliber has one right now. The bracketed [TODO]
-    // lines are real gaps: I only have the facts, not the story. Replace
-    // them with what actually happened before this goes out publicly.
     caseStudy: {
       problem:
         'The Caliber team was growing across two groups (Software Engineering and AI) with no shared way to see who owned what. Work was getting tracked informally, which made it hard to tell what was in progress, blocked, or done. Separately, the LeetCode Autograder gave students a flat pass/fail with no breakdown of what actually went wrong.',
@@ -83,7 +80,6 @@ const projects = [
       'Outcome: full-stack, with persistent chat history and secure auth built in.',
     stack: ['React', 'Node.js', 'OpenAI API'],
     image: '/images/project-yunie.png',
-    // TODO: add your GitHub link for this repo
     href: '#',
     tilt: '-rotate-1',
   },
@@ -112,155 +108,164 @@ export function FeaturedProjects() {
   return (
     <section
       id="projects"
-      className="mx-auto w-full max-w-5xl scroll-mt-8 px-5 py-16 sm:px-8"
+      className="relative scroll-mt-8 overflow-hidden py-20 sm:py-28"
     >
-      <Reveal>
-        <SectionHeading
-          index="02"
-          title="Featured projects"
-          note="what changed because of it"
-        />
-      </Reveal>
+      <ParallaxBackdrop variant="seabreeze" speed={0.14} />
+      <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
+        <Reveal>
+          <SectionHeading
+            index="02"
+            title="Featured projects"
+            note="what changed because of it"
+          />
+        </Reveal>
 
-      <ul className="mt-8 flex flex-col gap-6">
-        {projects.map((project, index) => (
-          <li key={project.name}>
-            <Reveal delay={index * 80}>
-            <PaperCard
-              className={`group flex flex-col gap-5 p-4 transition-transform duration-300 hover:-translate-y-1 sm:flex-row sm:p-5 ${project.tilt} hover:rotate-0`}
-            >
-              <Tape
-                className="-top-3 left-10 -rotate-2"
-                label={`0${index + 1}`}
-              />
+        <ul className="mt-10 flex flex-col gap-8 sm:mt-12">
+          {projects.map((project, index) => (
+            <li key={project.name}>
+              <Reveal delay={index * 80}>
+                <PaperCard
+                  className={`group flex flex-col gap-6 p-5 transition-transform duration-300 hover:-translate-y-1 sm:flex-row sm:p-6 ${project.tilt} hover:rotate-0`}
+                >
+                  <Tape
+                    className="-top-3 left-10 -rotate-2"
+                    label={`0${index + 1}`}
+                  />
 
-              <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden rounded-sm bg-muted sm:aspect-square sm:w-40">
-                <Image
-                  src={project.image}
-                  alt={`Placeholder artwork for ${project.name}`}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 160px"
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+                  <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden rounded-sm bg-muted sm:aspect-square sm:w-52">
+                    <Image
+                      src={project.image}
+                      alt={`Placeholder artwork for ${project.name}`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 208px"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
 
-              <div className="flex flex-col gap-2.5">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                  <h3 className="display text-2xl">{project.name}</h3>
-                  <p className="eyebrow text-muted-foreground">
-                    {project.role}
-                  </p>
-                  <span className="rounded-full bg-highlight/60 px-2 py-0.5 eyebrow text-[10px] text-foreground/80">
-                    {project.status}
-                  </span>
-                </div>
+                  <div className="flex flex-col gap-2.5">
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
+                      <h3 className="display text-2xl">{project.name}</h3>
+                      <p className="eyebrow text-muted-foreground">
+                        {project.role}
+                      </p>
+                      <span className="rounded-full bg-highlight/60 px-2 py-0.5 eyebrow text-[10px] text-foreground/80">
+                        {project.status}
+                      </span>
+                    </div>
 
-                <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-                  {project.summary}
-                </p>
+                    <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
+                      {project.summary}
+                    </p>
 
-                <p className="max-w-prose border-l-2 border-highlight bg-highlight/25 py-1 pl-3 text-sm leading-relaxed font-medium">
-                  {project.outcome}
-                </p>
+                    <p className="max-w-prose border-l-2 border-highlight bg-highlight/25 py-1 pl-3 text-sm leading-relaxed font-medium">
+                      {project.outcome}
+                    </p>
 
-                <div className="mt-1 flex flex-wrap items-center gap-2">
-                  {project.stack.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-full border border-border px-2 py-0.5 eyebrow text-[10px] text-muted-foreground"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                  {project.caseStudy ? (
-                    <button
-                      type="button"
-                      onClick={() => setOpenCaseStudy(true)}
-                      className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                    >
-                      Read the full story
-                      <ArrowUpRight className="size-3.5" aria-hidden="true" />
-                    </button>
-                  ) : null}
-                  {project.href !== '#' ? (
-                    <a
-                      href={project.href}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="ml-auto inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                    >
-                      View on GitHub
-                      <ArrowUpRight className="size-3.5" aria-hidden="true" />
-                    </a>
-                  ) : (
-                    <span className="ml-auto eyebrow text-muted-foreground/60">
-                      link coming soon
-                    </span>
-                  )}
-                </div>
-              </div>
-            </PaperCard>
-            </Reveal>
-          </li>
-        ))}
-      </ul>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      {project.stack.map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full border border-border px-2 py-0.5 eyebrow text-[10px] text-muted-foreground"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                      {project.caseStudy ? (
+                        <button
+                          type="button"
+                          onClick={() => setOpenCaseStudy(true)}
+                          className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                        >
+                          Read the full story
+                          <ArrowUpRight
+                            className="size-3.5"
+                            aria-hidden="true"
+                          />
+                        </button>
+                      ) : null}
+                      {project.href !== '#' ? (
+                        <a
+                          href={project.href}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="ml-auto inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                        >
+                          View on GitHub
+                          <ArrowUpRight
+                            className="size-3.5"
+                            aria-hidden="true"
+                          />
+                        </a>
+                      ) : (
+                        <span className="ml-auto eyebrow text-muted-foreground/60">
+                          link coming soon
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </PaperCard>
+              </Reveal>
+            </li>
+          ))}
+        </ul>
 
-      {openCaseStudy && caliber.caseStudy ? (
-        <div
-          className="journal-overlay fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/40 p-4 backdrop-blur-sm sm:items-center sm:p-6"
-          onClick={() => setOpenCaseStudy(false)}
-        >
+        {openCaseStudy && caliber.caseStudy ? (
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="case-study-title"
-            onClick={(event) => event.stopPropagation()}
-            className="journal-panel paper-edge relative my-8 w-full max-w-2xl -rotate-[0.4deg] rounded-sm border border-border bg-card p-6 sm:my-0 sm:p-10"
+            className="journal-overlay fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/40 p-4 backdrop-blur-sm sm:items-center sm:p-6"
+            onClick={() => setOpenCaseStudy(false)}
           >
-            <Tape className="-top-3 left-10 -rotate-3" label="case study" />
-
-            <button
-              ref={closeButtonRef}
-              type="button"
-              onClick={() => setOpenCaseStudy(false)}
-              aria-label="Close case study"
-              className="absolute right-3 top-3 inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="case-study-title"
+              onClick={(event) => event.stopPropagation()}
+              className="journal-panel paper-edge relative my-8 w-full max-w-2xl -rotate-[0.4deg] rounded-sm border border-border bg-card p-6 sm:my-0 sm:p-10"
             >
-              <X className="size-4" aria-hidden="true" />
-            </button>
+              <Tape className="-top-3 left-10 -rotate-3" label="case study" />
 
-            <p className="eyebrow text-muted-foreground">Case study</p>
-            <h3
-              id="case-study-title"
-              className="mt-2 display text-3xl leading-[1.05] text-balance sm:text-4xl"
-            >
-              {caliber.name}
-            </h3>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={() => setOpenCaseStudy(false)}
+                aria-label="Close case study"
+                className="absolute right-3 top-3 inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <X className="size-4" aria-hidden="true" />
+              </button>
 
-            <div className="mt-6 flex flex-col gap-5 text-[0.95rem] leading-relaxed text-foreground/85">
-              <div>
-                <p className="eyebrow mb-1.5 text-primary">The problem</p>
-                <p className="max-w-prose">{caliber.caseStudy.problem}</p>
-              </div>
-              <div>
-                <p className="eyebrow mb-1.5 text-primary">What I tried</p>
-                <p className="max-w-prose">{caliber.caseStudy.approach}</p>
-              </div>
-              <div>
-                <p className="eyebrow mb-1.5 text-primary">What shipped</p>
-                <p className="max-w-prose">{caliber.caseStudy.shipped}</p>
-              </div>
-              <div>
-                <p className="eyebrow mb-1.5 text-primary">
-                  What I&apos;d do differently
-                </p>
-                <p className="max-w-prose">{caliber.caseStudy.reflection}</p>
+              <p className="eyebrow text-muted-foreground">Case study</p>
+              <h3
+                id="case-study-title"
+                className="mt-2 display text-3xl leading-[1.05] text-balance sm:text-4xl"
+              >
+                {caliber.name}
+              </h3>
+
+              <div className="mt-6 flex flex-col gap-5 text-[0.95rem] leading-relaxed text-foreground/85">
+                <div>
+                  <p className="eyebrow mb-1.5 text-primary">The problem</p>
+                  <p className="max-w-prose">{caliber.caseStudy.problem}</p>
+                </div>
+                <div>
+                  <p className="eyebrow mb-1.5 text-primary">What I tried</p>
+                  <p className="max-w-prose">{caliber.caseStudy.approach}</p>
+                </div>
+                <div>
+                  <p className="eyebrow mb-1.5 text-primary">What shipped</p>
+                  <p className="max-w-prose">{caliber.caseStudy.shipped}</p>
+                </div>
+                <div>
+                  <p className="eyebrow mb-1.5 text-primary">
+                    What I&apos;d do differently
+                  </p>
+                  <p className="max-w-prose">{caliber.caseStudy.reflection}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </section>
   )
 }

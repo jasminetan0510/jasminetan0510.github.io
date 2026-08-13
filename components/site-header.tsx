@@ -8,14 +8,22 @@ const navLinks = [
 ]
 
 /**
- * Sticky top bar: wordmark + section nav on the left/center,
- * "Get in touch" (scrolls to the footer contact section) and a plain
- * "Download Resume" text link on the right.
+ * Floating "island" nav bar, inspired by the iPhone Dynamic Island:
+ * a fixed, pill-shaped, translucent capsule that hovers above the
+ * page content and never shifts position as the user scrolls.
  */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-sm">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+    <header className="pointer-events-none fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-6">
+      <div
+        className="
+          pointer-events-auto flex w-full max-w-5xl items-center justify-between
+          gap-4 rounded-full border border-white/10 bg-background/30
+          px-6 py-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)]
+          backdrop-blur-xl backdrop-saturate-150
+          sm:px-8
+        "
+      >
         <a
           href="#hero"
           className="eyebrow shrink-0 text-foreground transition-colors hover:text-primary"
@@ -33,7 +41,6 @@ export function SiteHeader() {
               href={link.href}
               className="eyebrow flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
             >
-              <span className="text-primary"></span>
               <Star className="w-4 h-4 text-primary shrink-0" />
               {link.label}
             </a>

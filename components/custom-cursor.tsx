@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 // best. CURSOR_SIZE is the on-screen display size in px — the source file
 // can be higher-res than that for retina screens, it'll just get scaled down.
 const CURSOR_SRC = '/images/cursor.png'
-const CURSOR_SIZE = 121
+const CURSOR_SIZE = 144
 
 export function CustomCursor() {
   const posRef = useRef<HTMLDivElement>(null)

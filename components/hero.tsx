@@ -93,7 +93,12 @@ export function Hero() {
           </Reveal>
 
           <Reveal delay={180}>
-            <h1 className="display text-5xl leading-[0.95] text-balance sm:text-6xl lg:text-7xl">
+            <h1
+              className={cn(
+                'display text-5xl leading-[0.95] text-balance sm:text-6xl lg:text-7xl',
+                !reducedMotion && 'animate-breathe',
+              )}
+            >
               Hi, I&apos;m Jasmine :)
             </h1>
           </Reveal>
@@ -231,6 +236,21 @@ export function Hero() {
         .animate-polaroid-sway {
           animation: polaroid-sway 6s ease-in-out infinite;
           transform-origin: top center;
+        }
+
+        @keyframes breathe {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.015);
+          }
+        }
+        .animate-breathe {
+          display: inline-block;
+          animation: breathe 6s ease-in-out infinite;
+          transform-origin: center;
         }
 
         @keyframes sticker-float {

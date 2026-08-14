@@ -2,6 +2,7 @@
 
 import { Download, Star } from 'lucide-react'
 import { useLenis } from 'lenis/react'
+import { useSound } from '@/components/sound-provider'
 
 const navLinks = [
   { label: 'Projects', href: '#projects', num: '02' },
@@ -22,6 +23,7 @@ const navLinks = [
  */
 export function SiteHeader() {
   const lenis = useLenis()
+  const { playClick } = useSound()
 
   // Anchor links jump instantly by default — Lenis only smooths wheel/
   // programmatic scroll, not native <a href="#..."> clicks. Route them
@@ -68,7 +70,10 @@ export function SiteHeader() {
             <a
               key={link.href}
               href={link.href}
-              onClick={(e) => handleAnchorClick(e, link.href)}
+              onClick={(e) => {
+                playClick()
+                handleAnchorClick(e, link.href)
+              }}
               className="group/link eyebrow flex items-center gap-1.5 rounded-full px-3 py-1.5 text-muted-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
             >
               <Star className="w-4 h-4 text-primary shrink-0 transition-all duration-200 ease-out group-hover/link:drop-shadow-[0_0_6px_var(--ring)]" />

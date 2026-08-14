@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Jost, Outfit } from 'next/font/google'
-import { SmoothScroll } from '@/components/smooth-scroll'
+import Script from 'next/script'
 import { CustomCursor } from '@/components/custom-cursor'
+import { SmoothScroll } from '@/components/smooth-scroll'
+import { SoundProvider } from '@/components/sound-provider'
 import './globals.css'
 
 const _outfit = Outfit({
@@ -84,12 +86,23 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {/* beforeInteractive runs this before hydration, same timing as
+            the old raw <script> tag, but without React's "script tags
+            are never executed when rendering on the client" warning —
+            Script is specifically designed for scripts that need to run
+            pre-hydration like this theme flash-prevention check. */}
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
       </head>
       <body className="font-sans antialiased">
-        <SmoothScroll />
-        <CustomCursor />
-        {children}
+        <SoundProvider>
+          <SmoothScroll />
+          <CustomCursor />
+          {children}
+        </SoundProvider>
         {/* TODO: sign up at goatcounter.com (free), then replace
             YOURCODE below with your actual GoatCounter site code. */}
         <script

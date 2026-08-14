@@ -58,7 +58,7 @@ export function SiteFooter() {
               className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
             >
               <Download className="size-4" aria-hidden="true" />
-              Download Resume
+              Resume
             </a>
           </div>
 

@@ -2,21 +2,22 @@ import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
 import { ParallaxBackdrop } from '@/components/parallax-backdrop'
 
-const testimonials = [
+// Grouped by project rather than one-card-per-quote — the two KIT
+// teammates share a card since they're speaking to the same project,
+// which keeps the section shorter without cutting any voices.
+const testimonialGroups = [
   {
-    quote:
-      'She\u2019s the one who ends up coordinating and checking up on the team to make sure our work is on time. She was the one who set up the group chat so that our team has a means of communication.',
     source: 'Teammate, UCSB Project Dining',
+    quotes: [
+      'She\u2019s the one who ends up coordinating and checking up on the team to make sure our work is on time. She was the one who set up the group chat so that our team has a means of communication.',
+    ],
   },
   {
-    quote:
+    source: 'Teammates, KIT',
+    quotes: [
       'Consistently produced high-quality work that required minimal re-review, which greatly streamlined the team\u2019s workflow. Even after finishing her own tasks, she remained available to support other team members.',
-    source: 'Teammate, KIT',
-  },
-  {
-    quote:
       'Essential in handling the food waste aspect of our app. Went to class every day and participated meaningfully in discussion towards the progress of our app.',
-    source: 'Teammate, KIT',
+    ],
   },
 ]
 
@@ -33,19 +34,29 @@ export function Testimonials() {
           />
         </Reveal>
 
-        <ul className="mt-8 grid grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-3 sm:gap-7">
-          {testimonials.map((t, i) => (
-            <li key={i}>
+        {/* items-start (not stretch) — cards keep their own natural
+            height instead of both being forced to match whichever one
+            has the most content. */}
+        <ul className="mt-8 grid grid-cols-1 items-start gap-6 sm:mt-10 sm:grid-cols-2 sm:gap-7">
+          {testimonialGroups.map((group, i) => (
+            <li key={group.source}>
               <Reveal delay={i * 100}>
-                <PaperCard className="relative flex h-full flex-col gap-3 p-6 transition-transform duration-300 hover:-translate-y-1">
+                <PaperCard className="relative flex flex-col gap-4 p-5 transition-transform duration-300 hover:-translate-y-1 sm:p-6">
                   {i === 0 ? (
                     <Tape className="-top-3 left-8 -rotate-2" label="real" />
                   ) : null}
-                  <p className="text-sm leading-relaxed text-foreground/85">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <p className="mt-auto eyebrow text-muted-foreground">
-                    {t.source}
+
+                  {group.quotes.map((quote, qi) => (
+                    <p
+                      key={qi}
+                      className="text-sm leading-normal text-foreground/85"
+                    >
+                      &ldquo;{quote}&rdquo;
+                    </p>
+                  ))}
+
+                  <p className="eyebrow text-muted-foreground">
+                    {group.source}
                   </p>
                 </PaperCard>
               </Reveal>

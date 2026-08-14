@@ -63,7 +63,7 @@ export function Playground() {
           <SectionHeading
             index="04"
             title={<CarouselText text="Playground" />}
-            note="little things I build to think"
+            note="under construction"
           />
         </Reveal>
 

@@ -128,7 +128,7 @@ export function Hero() {
                 building things, and chasing new ideas into real ventures.
               </p>
               <p className="max-w-prose">
-                Outside of that: the gym, local trails, and experimenting in the
+                Outside of that, I enjoy lifting at the gym, exploring local trails + beaches, and experimenting in the
                 kitchen.
               </p>
             </div>

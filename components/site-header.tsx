@@ -89,7 +89,7 @@ export function SiteHeader() {
             className="hidden items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-medium text-foreground/80 transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)] sm:inline-flex"
           >
             <Download className="size-3.5" aria-hidden="true" />
-            Download Resume
+            Resume
           </a>
           <a
             href="#contact"

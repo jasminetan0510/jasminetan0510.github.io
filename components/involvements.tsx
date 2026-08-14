@@ -1,8 +1,7 @@
 'use client'
 
-import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
-import { useRef, useState } from 'react'
 import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
 import { ParallaxBackdrop } from '@/components/parallax-backdrop'
@@ -41,133 +40,86 @@ const involvements: Involvement[] = [
     image: '/images/involvement-dls.jpg',
     href: 'https://www.dls.ucsb.edu/',
   },
+  {
+    name: 'Community-Based Literacies (CBLE)',
+    role: 'Volunteer Instructor · Harding University Partnership School',
+    blurb:
+      'Three quarters with 4th/5th graders at Harding: led small-group landforms lessons, co-ran a college-access research project on UCSB housing, and served as a classroom aide for reading and writing support.',
+    image: '/images/involvement-cble.png',
+    href: 'https://www.cbleducation.org/programs',
+  },
 ]
 
+/**
+ * All involvements as a single gallery in one row of 4 — nothing is
+ * hidden behind a carousel or requires paging through. A slight
+ * alternating tilt (matching the scrapbook motif used elsewhere) keeps
+ * the row from feeling like a rigid product layout.
+ */
 export function Involvements() {
-  const [index, setIndex] = useState(0)
-  const dragStartX = useRef<number | null>(null)
-  const active = involvements[index]
-
-  function go(delta: number) {
-    setIndex(
-      (prev) => (prev + delta + involvements.length) % involvements.length,
-    )
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent) {
-    if (event.key === 'ArrowLeft') go(-1)
-    if (event.key === 'ArrowRight') go(1)
-  }
-
-  function handlePointerDown(event: React.PointerEvent) {
-    dragStartX.current = event.clientX
-  }
-
-  function handlePointerUp(event: React.PointerEvent) {
-    if (dragStartX.current === null) return
-    const delta = event.clientX - dragStartX.current
-    if (Math.abs(delta) > 40) go(delta > 0 ? -1 : 1)
-    dragStartX.current = null
-  }
-
   return (
     <section
       id="involvements"
       className="relative scroll-mt-8 overflow-hidden bg-secondary py-14 sm:py-20"
     >
-      <ParallaxBackdrop variant="seabreeze" speed={0.16} />
+      <ParallaxBackdrop variant="cococream" speed={0.16} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
             index="03"
             title="My involvements"
-            note="outside the classroom"
+            note="organizations i love"
           />
         </Reveal>
 
-        <PaperCard className="mt-8 overflow-hidden p-5 sm:mt-10 sm:p-8">
-          <Tape className="-top-3 left-10 -rotate-2" label="+" />
-
-          <div
-            role="group"
-            aria-roledescription="carousel"
-            aria-label="Extracurricular involvements"
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
-            className="relative touch-pan-y rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-sm bg-muted sm:aspect-[21/9]">
-              <Image
-                key={active.image}
-                src={active.image}
-                alt={`${active.name} — ${active.role}`}
-                fill
-                sizes="(max-width: 768px) 100vw, 900px"
-                className="object-cover animate-[fade-in_0.4s_ease-out]"
-                priority={index === 0}
-              />
-
-              <button
-                type="button"
-                onClick={() => go(-1)}
-                aria-label="Previous involvement"
-                className="absolute top-1/2 left-3 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/90 text-foreground backdrop-blur-sm transition-transform hover:-translate-x-0.5"
+        <div className="mt-8 grid gap-5 sm:mt-10 sm:grid-cols-4">
+          {involvements.map((item, index) => (
+            <Reveal key={item.name} delay={index * 90}>
+              <PaperCard
+                className={cn(
+                  'group flex h-full flex-col overflow-hidden p-0 transition-transform duration-300 hover:-translate-y-1 hover:rotate-0',
+                  index % 2 === 0 ? 'sm:-rotate-1' : 'sm:rotate-1',
+                )}
               >
-                <ArrowLeft className="size-4" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={() => go(1)}
-                aria-label="Next involvement"
-                className="absolute top-1/2 right-3 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/90 text-foreground backdrop-blur-sm transition-transform hover:translate-x-0.5"
-              >
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </button>
-            </div>
+                {index === 0 ? (
+                  <Tape className="-top-3 left-1/2 -translate-x-1/2 -rotate-2" />
+                ) : null}
 
-            <div
-              key={active.name}
-              className="mt-5 flex flex-col gap-1.5 animate-[fade-in_0.4s_ease-out] sm:mt-6"
-            >
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h3 className="display text-2xl">{active.name}</h3>
-                <p className="eyebrow text-muted-foreground">{active.role}</p>
-              </div>
-              <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-                {active.blurb}
-              </p>
-              <a
-                href={active.href}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="mt-1 inline-flex w-fit items-center gap-1 text-sm font-medium text-primary hover:underline"
-              >
-                Visit website
-                <ArrowUpRight className="size-3.5" aria-hidden="true" />
-              </a>
-            </div>
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted">
+                  <Image
+                    src={item.image}
+                    alt={`${item.name} — ${item.role}`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 25vw"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                </div>
 
-            <div className="mt-5 flex items-center justify-center gap-2">
-              {involvements.map((item, i) => (
-                <button
-                  key={item.name}
-                  type="button"
-                  onClick={() => setIndex(i)}
-                  aria-label={`Go to ${item.name}`}
-                  aria-current={i === index}
-                  className={cn(
-                    'h-2 rounded-full transition-all',
-                    i === index
-                      ? 'w-6 bg-primary'
-                      : 'w-2 bg-border hover:bg-muted-foreground/40',
-                  )}
-                />
-              ))}
-            </div>
-          </div>
-        </PaperCard>
+                <div className="flex flex-1 flex-col gap-1.5 p-4 sm:p-5">
+                  <h3 className="display line-clamp-2 text-lg leading-tight sm:text-xl">
+                    {item.name}
+                  </h3>
+                  <p className="eyebrow line-clamp-1 text-muted-foreground">
+                    {item.role}
+                  </p>
+                  <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                    {item.blurb}
+                  </p>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="mt-auto inline-flex w-fit items-center gap-1 pt-2 text-sm font-medium text-primary hover:underline"
+                  >
+                    Visit website
+                    <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                  </a>
+                </div>
+              </PaperCard>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   )

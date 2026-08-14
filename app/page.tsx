@@ -3,6 +3,7 @@ import { EasterEgg } from '@/components/easter-egg'
 import { FeaturedProjects } from '@/components/featured-projects'
 import { Hero } from '@/components/hero'
 import { ImpactStats } from '@/components/impact-stats'
+import { ImpactAndTestimonials } from '@/components/impact-and-testimonials'
 import { Involvements } from '@/components/involvements'
 import { Playground } from '@/components/playground'
 import { SiteFooter } from '@/components/site-footer'
@@ -16,10 +17,11 @@ export default function Page() {
       <SiteHeader />
       <Hero />
       <Currently />
-      <ImpactStats />
+      <ImpactAndTestimonials />
+      {/* <ImpactStats /> */}
       <main>
         <FeaturedProjects />
-        <Testimonials />
+        {/* <Testimonials /> */}
         <Involvements />
         <Playground />
       </main>

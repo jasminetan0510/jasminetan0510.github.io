@@ -128,8 +128,7 @@ export function Hero() {
                 building things, and chasing new ideas into real ventures.
               </p>
               <p className="max-w-prose">
-                Outside of that, I enjoy lifting at the gym, exploring local trails + beaches, and experimenting in the
-                kitchen.
+                Outside of that, I enjoy working with kids, lifting at the gym, exploring local trails + beaches, and conducting fun craft experiments.
               </p>
             </div>
           </Reveal>
@@ -150,7 +149,7 @@ export function Hero() {
                 href="#playground"
                 className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95 hover:[animation:wiggle_0.4s_ease-in-out]"
               >
-                Play with something
+                Playground: Under Construction
               </a>
             </div>
           </Reveal>

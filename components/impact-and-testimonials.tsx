@@ -94,7 +94,7 @@ export function ImpactAndTestimonials() {
         <Reveal>
           <SectionHeading
             index="02"
-            title="Impact, in numbers and words"
+            title="Key Impacts"
             note="the results, and the people who saw them happen"
           />
         </Reveal>

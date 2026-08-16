@@ -26,7 +26,7 @@ export default function Page() {
         {/* <Playground /> */}
       </main>
       <SiteFooter />
-      <UtilityRail />
+      {/* <UtilityRail /> */}
       <EasterEgg />
     </>
   )

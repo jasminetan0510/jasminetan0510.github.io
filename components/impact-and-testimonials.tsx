@@ -88,12 +88,12 @@ function StatItem({ stat }: { stat: Stat }) {
  */
 export function ImpactAndTestimonials() {
   return (
-    <section className="relative overflow-hidden bg-accent py-14 sm:py-20">
+    <section className="relative scroll-mt-8 overflow-hidden bg-accent py-14 sm:py-20" id="impact">
       <ParallaxBackdrop variant="cococream" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
-            index="01"
+            index="02"
             title="Impact, in numbers and words"
             note="the results, and the people who saw them happen"
           />

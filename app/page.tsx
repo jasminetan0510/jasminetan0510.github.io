@@ -5,7 +5,7 @@ import { Hero } from '@/components/hero'
 import { ImpactStats } from '@/components/impact-stats'
 import { ImpactAndTestimonials } from '@/components/impact-and-testimonials'
 import { Involvements } from '@/components/involvements'
-import { Playground } from '@/components/playground'
+// import { Playground } from '@/components/playground'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { Testimonials } from '@/components/testimonials'
@@ -23,7 +23,7 @@ export default function Page() {
         <FeaturedProjects />
         {/* <Testimonials /> */}
         <Involvements />
-        <Playground />
+        {/* <Playground /> */}
       </main>
       <SiteFooter />
       <UtilityRail />

@@ -5,9 +5,10 @@ import { useLenis } from 'lenis/react'
 import { useSound } from '@/components/sound-provider'
 
 const navLinks = [
+  { label: 'Impact', href: '#impact', num: '01' },
   { label: 'Projects', href: '#projects', num: '02' },
   { label: 'Involvements', href: '#involvements', num: '04' },
-  { label: 'Playground', href: '#playground', num: '05' },
+  // { label: 'Playground', href: '#playground', num: '05' },
 ]
 
 /**

@@ -8,6 +8,46 @@ import { Reveal } from '@/components/reveal'
 import { Tape } from '@/components/scrapbook'
 import { cn } from '@/lib/utils'
 
+const HEADLINE = "Hi, I'm Jasmine :)"
+
+/**
+ * Types `text` out one character at a time. Set `start` to false to hold
+ * off (e.g. until an earlier Reveal has finished), and `speed` in ms/char.
+ */
+function useTypewriter(
+  text: string,
+  { speed = 55, startDelay = 0, start = true } = {},
+) {
+  const [output, setOutput] = useState('')
+  const [done, setDone] = useState(false)
+
+  useEffect(() => {
+    if (!start) return
+
+    let charTimer: ReturnType<typeof setTimeout>
+    const startTimer = setTimeout(() => {
+      let i = 0
+      const tick = () => {
+        i += 1
+        setOutput(text.slice(0, i))
+        if (i < text.length) {
+          charTimer = setTimeout(tick, speed)
+        } else {
+          setDone(true)
+        }
+      }
+      tick()
+    }, startDelay)
+
+    return () => {
+      clearTimeout(startTimer)
+      clearTimeout(charTimer)
+    }
+  }, [text, speed, startDelay, start])
+
+  return { output, done }
+}
+
 /**
  * Hero + polaroid, combined into one file since the polaroid only ever
  * appears here.
@@ -37,6 +77,15 @@ export function Hero() {
       mq.removeEventListener('change', onChange)
     }
   }, [])
+
+  // Headline types out once the two Reveal items above it (delay 0, 90)
+  // have finished settling in. 180ms matches the h1's own Reveal delay
+  // so the wrapper fade and the first keystroke land together.
+  const { output: typedHeadline, done: typingDone } = useTypewriter(HEADLINE, {
+    speed: 55,
+    startDelay: 180,
+    start: !reducedMotion,
+  })
 
   return (
     <header id="hero" className="relative overflow-hidden bg-accent">
@@ -93,13 +142,28 @@ export function Hero() {
           </Reveal>
 
           <Reveal delay={180}>
+            {/* aria-label carries the full string for screen readers /
+                SEO so they don't read partial characters mid-type; the
+                visible span is aria-hidden and is what actually animates. */}
             <h1
+              aria-label={HEADLINE}
               className={cn(
                 'display text-5xl leading-[0.95] text-balance sm:text-6xl lg:text-7xl',
-                !reducedMotion && 'animate-breathe',
+                !reducedMotion && typingDone && 'animate-breathe',
               )}
             >
-              Hi, I&apos;m Jasmine :)
+              <span aria-hidden="true">
+                {reducedMotion ? HEADLINE : typedHeadline}
+                {!reducedMotion && (
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'ml-0.5 -mb-[0.05em] inline-block h-[0.8em] w-[3px] align-middle bg-foreground/80',
+                      typingDone && 'animate-caret-blink',
+                    )}
+                  />
+                )}
+              </span>
             </h1>
           </Reveal>
 
@@ -263,6 +327,20 @@ export function Hero() {
         }
         .animate-sticker-float {
           animation: sticker-float 4.5s ease-in-out infinite;
+        }
+
+        @keyframes caret-blink {
+          0%,
+          49% {
+            opacity: 1;
+          }
+          50%,
+          100% {
+            opacity: 0;
+          }
+        }
+        .animate-caret-blink {
+          animation: caret-blink 1s step-end infinite;
         }
 
         @keyframes wiggle {

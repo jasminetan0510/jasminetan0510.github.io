@@ -50,7 +50,9 @@ function useTypewriter(
 
 /**
  * Hero + polaroid, combined into one file since the polaroid only ever
- * appears here.
+ * appears here. The "Currently" line now lives as a caption under the
+ * photo itself, rather than its own card in the text column or its own
+ * page section.
  */
 export function Hero() {
   const [flipped, setFlipped] = useState(false)
@@ -167,64 +169,43 @@ export function Hero() {
             </h1>
           </Reveal>
 
+          {/* Shorter copy now, so this dropped a size step (was
+              text-xl/2xl/1.75rem) and gained max-w + text-balance —
+              that's what was pushing "back?" onto its own orphan line;
+              balance lets the browser pick break points that keep the
+              last line from being that short. */}
           <Reveal delay={280}>
-            <p className="font-sans text-xl leading-relaxed font-light text-muted-foreground sm:text-2xl lg:text-[1.75rem]">
-              CS teaches me how to build. Education teaches me why it matters.
-              Technology management keeps the business side in view — all toward
-              tools that{' '}
-              <span className="relative inline-block text-foreground">
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-x-0 bottom-0 h-2 -rotate-1 bg-highlight/80"
-                />
-                <span className="relative">
-                  make learning and working together easier
-                </span>
-              </span>
-              .
+            <p className="max-w-[36ch] text-balance font-sans text-lg leading-snug font-light text-muted-foreground sm:text-xl lg:text-2xl">
+              My favorite problems sit between people and process: how can we
+              build tech that gives time back?
             </p>
           </Reveal>
 
-          {/* <Reveal delay={380}>
-            <div className="flex flex-col gap-3 text-sm leading-relaxed text-foreground/85 sm:text-[0.95rem]">
-              <p className="max-w-prose">
-                I&apos;m a rising fourth-year at UCSB. I like working with people,
-                building things, and chasing new ideas into real ventures.
-              </p>
-              <p className="max-w-prose">
-                Outside of that, I enjoy working with kids, lifting at the gym, exploring local trails + beaches, and conducting fun craft experiments.
-              </p>
-            </div>
-          </Reveal> */}
-
+          {/* Hard offset "sticker" shadow instead of a plain pill — reads
+              more like paper (matches the Tape language elsewhere) than a
+              generic rounded CTA. */}
           <Reveal delay={480}>
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <a
                 href="#projects"
-                className="group inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:scale-95"
+                className="group inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[3px_3px_0_0_theme(colors.foreground)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[4px_5px_0_0_theme(colors.foreground)] active:translate-y-0 active:shadow-[1px_1px_0_0_theme(colors.foreground)]"
               >
                 See the work
                 <ArrowDown
-                  className="size-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                  className="size-4 transition-transform duration-300 group-hover:translate-y-1"
                   aria-hidden="true"
                 />
               </a>
-              {/* <a
-                href="#playground"
-                className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95 hover:[animation:wiggle_0.4s_ease-in-out]"
-              >
-                Playground: Under Construction
-              </a> */}
             </div>
           </Reveal>
         </div>
 
-        {/* Polaroid photo — click to flip to a short "currently" note.
-            Outer div: one-time spring drop-in on mount (opacity/translate/
-            scale only). Middle div: continuous idle sway once settled
-            (rotate only, paused on hover). Button: existing flip/hover
-            behavior, untouched. Three separate transform contexts stack
-            cleanly without fighting each other. */}
+        {/* Polaroid photo — click to flip to a longer "currently" note.
+            The short version now lives as a caption under the photo at
+            all times (not just on flip), title bolded so it reads like a
+            polaroid label. Outer div: one-time spring drop-in on mount
+            (opacity/translate/scale only). Middle div: continuous idle
+            sway once settled (rotate only, paused on hover). */}
         <div
           className={cn(
             'relative mx-auto w-[15rem] shrink-0 sm:w-[18rem]',
@@ -246,7 +227,7 @@ export function Hero() {
               onClick={() => setFlipped((v) => !v)}
               aria-pressed={flipped}
               className={cn(
-                'paper-edge group block w-full rounded-sm bg-card p-3 pb-10 text-left transition-transform duration-300 ease-out',
+                'paper-edge group block w-full rounded-sm bg-card p-3 pb-4 text-left transition-transform duration-300 ease-out',
                 flipped
                   ? 'rotate-1'
                   : '-rotate-2 hover:rotate-0 hover:scale-[1.02]',
@@ -256,18 +237,14 @@ export function Hero() {
                 {flipped ? (
                   <div className="flex h-full flex-col justify-center gap-2 p-4">
                     <p className="display text-xl leading-snug">
-                      {/* TODO: adjust to whatever you're actually up to right now */}
-                      Currently: building Caliber&apos;s ticket tracker and
-                      getting SciTrek&apos;s scheduler ready for its fall launch.
+                      Currently preparing Caliber&apos;s project management platform and
+                      SciTrek&apos;s volunteer scheduler for launch.
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {/* TODO: adjust to what you're actually looking for */}
-                      Open to PM / APM opportunities — let&apos;s talk.
+                      Reaching 250+ undergraduate students beginning Fall 2026.
                     </p>
                   </div>
                 ) : (
-                  // TODO: drop your own photo at public/images/polaroid-portrait.png
-                  // Recommended: a square-ish crop, at least 500x500px.
                   <Image
                     src="/images/headshot2.png"
                     alt="Jasmine Tan"
@@ -278,8 +255,18 @@ export function Hero() {
                   />
                 )}
               </div>
-              <p className="mt-3 eyebrow text-muted-foreground">
-                {flipped ? 'click to flip back' : 'click me →'}
+
+              {/* Caption strip — always visible, independent of flip
+                  state. Bolded title per your note; keep this short since
+                  the polaroid is narrow (15rem on mobile). */}
+              <p className="mt-2.5 text-[0.8rem] leading-snug text-foreground/80">
+                <span className="font-semibold text-foreground">
+                  Development Team
+                </span>
+                , Caliber Research Group
+              </p>
+              <p className="mt-1 eyebrow text-muted-foreground">
+                {flipped ? 'click to flip back' : 'click for more →'}
               </p>
             </button>
           </div>

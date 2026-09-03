@@ -49,7 +49,7 @@ const projects = [
     outcome:
       'Introduced a same-day PR-review norm that eliminated the review backlogs we\u2019d hit on a prior project \u2014 delivered 100% of committed work on schedule.',
     stack: ['React', 'Spring Boot'],
-    image: '/images/project-ucsb-dining.png',
+    image: '/images/project-kit.png',
     href: 'https://github.com/ucsb-cs156-f25/proj-dining-f25-05',
     caseStudyDraft: {
       problem: 'TODO — what was broken in the legacy app before your team touched it?',
@@ -111,7 +111,7 @@ const projects = [
     outcome:
       'OCR receipt scanning and barcode lookup cut manual item entry to near-zero, backed by Supabase for storage and auth.',
     stack: ['React Native', 'Expo', 'FastAPI', 'Supabase'],
-    image: '/images/project-kit.png',
+    image: '/images/project-ucsb-dining.png',
     href: 'https://github.com/ucsb-cs184-w26/team12-KIT',
     caseStudyDraft: {
       problem: 'TODO — what was broken about tracking kitchen inventory here?',
@@ -122,138 +122,6 @@ const projects = [
   },
 ]
 
-const skillGroups = [
-  {
-    label: 'Languages',
-    items: ['C++', 'Python', 'JavaScript', 'HTML/CSS', 'SQL'],
-  },
-  {
-    label: 'Frameworks & Tools',
-    items: [
-      'React',
-      'React Native',
-      'Flutter',
-      'Node.js',
-      'FastAPI',
-      'Supabase',
-      'OpenAI API',
-      'Git/GitHub',
-      'Webflow',
-      'Figma',
-      'Cypress',
-    ],
-  },
-  {
-    label: 'Project Management',
-    items: [
-      'Agile/Scrum',
-      'Sprint Planning',
-      'Risk Management',
-      'Documentation & Reporting',
-      'Notion',
-      'Smartsheet',
-      'ClickUp',
-      'Jira',
-    ],
-  },
-]
-
-// Logos for the scrolling strip below the skill chips. `slug` is the
-// Simple Icons (simpleicons.org) name — served from their free CDN,
-// tinted to match the site's ink color rather than each tool's brand
-// color so 18 different logos don't turn into visual noise. Only tools
-// confirmed to have a Simple Icons entry are included here; a few from
-// skillGroups above (SQL, Smartsheet, Agile/Scrum-type skills) don't
-// have a matching brand mark and are left out rather than risk a
-// broken icon.
-//
-// TODO (later): once there are enough certificates to show, build a
-// `certificateLogos` array in this same {name, slug} shape and swap it
-// into the <LogoMarquee items={...} /> call below — everything else
-// (the scroll animation, masking, sizing) stays the same.
-const toolLogos = [
-  { name: 'React', slug: 'react' },
-  { name: 'JavaScript', slug: 'javascript' },
-  { name: 'Python', slug: 'python' },
-  { name: 'C++', slug: 'cplusplus' },
-  { name: 'HTML5', slug: 'html5' },
-  { name: 'CSS3', slug: 'css3' },
-  { name: 'Node.js', slug: 'nodedotjs' },
-  { name: 'FastAPI', slug: 'fastapi' },
-  { name: 'Flutter', slug: 'flutter' },
-  { name: 'Supabase', slug: 'supabase' },
-  { name: 'OpenAI', slug: 'openai' },
-  { name: 'GitHub', slug: 'github' },
-  { name: 'Webflow', slug: 'webflow' },
-  { name: 'Figma', slug: 'figma' },
-  { name: 'Cypress', slug: 'cypress' },
-  { name: 'Notion', slug: 'notion' },
-  { name: 'ClickUp', slug: 'clickup' },
-  { name: 'Jira', slug: 'jira' },
-]
-
-/**
- * One static row of skill chips, kept to a single line. Long rows
- * (Frameworks & Tools) scroll horizontally rather than wrapping —
- * wrapping pushed the last chip or two onto an orphaned second line,
- * which read worse than a deliberately scrollable row.
- */
-function SkillRow({ label, items }: { label: string; items: string[] }) {
-  return (
-    <div className="flex items-center gap-4">
-      <p className="eyebrow w-24 shrink-0 text-muted-foreground sm:w-28">
-        {label}
-      </p>
-      <div className="skill-row-scroll flex flex-1 flex-nowrap gap-2 overflow-x-auto">
-        {items.map((item) => (
-          <span
-            key={item}
-            className="whitespace-nowrap rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-xs text-foreground/85"
-          >
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-/**
- * Reusable scrolling logo strip. Duplicates `items` once so the CSS
- * animation can loop seamlessly (translate exactly -50% instead of
- * -100%, since the track is now twice the content's width). Built
- * generic on purpose — swap `items` for a certificates array later and
- * everything else (masking, speed, pause behavior) carries over as-is.
- */
-function LogoMarquee({
-  label,
-  items,
-}: {
-  label: string
-  items: { name: string; slug: string }[]
-}) {
-  const track = [...items, ...items]
-
-  return (
-    <div className="border-t border-border pt-4">
-      <p className="eyebrow mb-3 text-muted-foreground">{label}</p>
-      <div className="logo-marquee-mask overflow-hidden">
-        <div className="animate-logo-marquee flex w-max items-center gap-10">
-          {track.map((tool, i) => (
-            <img
-              key={`${tool.slug}-${i}`}
-              src={`https://cdn.simpleicons.org/${tool.slug}/1B1A17`}
-              alt={tool.name}
-              title={tool.name}
-              loading="lazy"
-              className="h-6 w-auto shrink-0 opacity-60 grayscale transition hover:opacity-100 sm:h-7"
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 type FrameProps = {
   src: string
@@ -395,7 +263,7 @@ export function FeaturedProjects() {
       id="projects"
       className="relative scroll-mt-8 overflow-hidden bg-secondary py-10 sm:py-14"
     >
-      <ParallaxBackdrop variant="cococream" speed={0.14} />
+      <ParallaxBackdrop variant="seabreeze" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
@@ -553,17 +421,6 @@ export function FeaturedProjects() {
           </button>
         </div>
 
-        {/* Toolkit — folded in here instead of its own section/heading.
-            Same scrolling-marquee card as before, just without the
-            "01 Toolkit" title above it. */}
-        <PaperCard className="relative mt-8 flex flex-col gap-4 overflow-hidden p-5 transition-transform duration-300 hover:-translate-y-1 sm:mt-10 sm:p-6">
-          <Tape className="-top-3 right-10 rotate-2" />
-          {skillGroups.map((group) => (
-            <SkillRow key={group.label} label={group.label} items={group.items} />
-          ))}
-          <LogoMarquee label="Tools I've used" items={toolLogos} />
-        </PaperCard>
-
         {/* Details modal — generalized to work for any project, not
             just Caliber. Summary + outcome + full stack always show;
             the problem/approach/shipped/reflection breakdown only
@@ -654,37 +511,6 @@ export function FeaturedProjects() {
           </div>
         ) : null}
       </div>
-
-      <style>{`
-        .skill-row-scroll {
-          scrollbar-width: none;
-        }
-        .skill-row-scroll::-webkit-scrollbar {
-          display: none;
-        }
-
-        .logo-marquee-mask {
-          -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-          mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-        }
-
-        @keyframes logo-marquee {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-logo-marquee {
-          animation: logo-marquee 26s linear infinite;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .animate-logo-marquee {
-            animation: none;
-          }
-        }
-      `}</style>
     </section>
   )
 }

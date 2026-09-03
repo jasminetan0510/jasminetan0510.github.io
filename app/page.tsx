@@ -10,6 +10,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { Testimonials } from '@/components/testimonials'
 import { UtilityRail } from '@/components/utility-rail'
+import { Toolkit } from '@/components/toolkit'
 
 export default function Page() {
   return (
@@ -17,10 +18,12 @@ export default function Page() {
       <SiteHeader />
       <Hero />
       {/* <Currently /> */}
-      <ImpactAndTestimonials />
+      {/* <ImpactAndTestimonials /> */}
       {/* <ImpactStats /> */}
       <main>
         <FeaturedProjects />
+        <ImpactAndTestimonials />
+        <Toolkit />
         {/* <Testimonials /> */}
         <Involvements />
         {/* <Playground /> */}

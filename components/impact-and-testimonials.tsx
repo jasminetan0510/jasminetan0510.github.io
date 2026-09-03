@@ -117,7 +117,7 @@ export function ImpactAndTestimonials() {
       className="relative scroll-mt-8 overflow-hidden border-y border-border bg-background py-16 sm:py-24"
       id="impact"
     >
-      <ParallaxBackdrop variant="seabreeze" speed={0.14} />
+      <ParallaxBackdrop variant="cococream" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading index="02" title="Key Impact" />

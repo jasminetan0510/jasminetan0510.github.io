@@ -149,7 +149,7 @@ export function Toolkit() {
       id="toolkit"
       className="relative scroll-mt-8 overflow-hidden bg-accent py-14 sm:py-20"
     >
-      <ParallaxBackdrop variant="cococream" speed={0.14} />
+      <ParallaxBackdrop variant="seabreeze" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading

@@ -85,20 +85,31 @@ function StatItem({ stat }: { stat: Stat }) {
 }
 
 /**
+ * Soft blurred ellipse poking out below a card's bottom edge — reads as
+ * the card being lit from underneath. Needs the card itself to NOT clip
+ * overflow (PaperCard doesn't by default), or this gets cut off flush
+ * with the card's bottom edge instead of glowing past it.
+ */
+function CardGlow() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute -bottom-5 left-1/2 h-10 w-[85%] -translate-x-1/2 rounded-full bg-card/45 blur-3xl"
+    />
+  )
+}
+
+/**
  * Impact stats + testimonials, combined into one section.
  *
- * Restructured for clearer separation from the sections around it:
- * - Background switches to bg-background (the site's base paper tone)
- *   instead of bg-accent, which the Hero also uses — sharing that color
- *   plus the same "cococream" parallax variant was why the two sections
- *   used to blend together with no visible seam.
- * - ParallaxBackdrop variant swapped to "seabreeze" so this section has
- *   its own texture instead of reusing the Hero's.
- * - Every card (stats + all three testimonials) is now the dark
- *   bg-foreground block — one consistent treatment instead of mixing
- *   light and dark cards.
- * - Dropped the "02 — the results, and the people who saw them happen"
- *   eyebrow/tagline row entirely; title now stands alone.
+ * Each stat now gets its own card (previously all four lived inside one
+ * shared PaperCard) — matches how the testimonials already work, one
+ * card per item, and gives each number its own glow/float instead of
+ * one block doing it for all four at once. Every card: rounded further
+ * (rounded-2xl), a soft glow underneath, and a slow staggered float so
+ * they read as alive rather than static — staggered per-card delay so
+ * they don't all bob in unison. Gaps opened up throughout so the extra
+ * cards don't feel cramped.
  */
 export function ImpactAndTestimonials() {
   return (
@@ -109,31 +120,45 @@ export function ImpactAndTestimonials() {
       <ParallaxBackdrop variant="seabreeze" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
-        <SectionHeading
-            index="01"
-            title="Key Impact"
-            // note="the full lineup, no digging required"
-          />
+          <SectionHeading index="01" title="Key Impact" />
         </Reveal>
 
-        <Reveal delay={80}>
-          <PaperCard className="relative mt-8 grid grid-cols-2 gap-x-6 gap-y-8 border-transparent bg-foreground p-6 sm:mt-10 sm:grid-cols-4 sm:gap-x-8 sm:p-8">
-            <Tape
-              className="-top-3 left-10 -rotate-2"
-              label="numbers"
-              tone="butter"
-            />
-            {stats.map((stat) => (
-              <StatItem key={stat.label} stat={stat} />
-            ))}
-          </PaperCard>
-        </Reveal>
+        <div className="mt-10 grid grid-cols-2 gap-5 sm:mt-12 sm:grid-cols-4 sm:gap-6">
+          {stats.map((stat, i) => (
+            <Reveal key={stat.label} delay={80 + i * 60}>
+              <PaperCard
+                className="animate-card-float relative overflow-visible rounded-2xl border-transparent bg-foreground p-5"
+                style={{
+                  animationDelay: `${i * 0.35}s`,
+                  boxShadow: '0 32px 40px -16px rgba(246, 241, 230, 0.55)',
+                }}
+              >
+                <CardGlow />
+                {i === 0 ? (
+                  <Tape
+                    className="-top-3 left-6 -rotate-2"
+                    label="numbers"
+                    tone="butter"
+                  />
+                ) : null}
+                <StatItem stat={stat} />
+              </PaperCard>
+            </Reveal>
+          ))}
+        </div>
 
-        <ul className="mt-6 grid grid-cols-1 items-start gap-6 sm:mt-8 sm:grid-cols-3 sm:gap-7">
+        <ul className="mt-10 grid grid-cols-1 items-start gap-6 sm:mt-14 sm:grid-cols-3 sm:gap-8">
           {testimonialGroups.map((group, i) => (
             <li key={i}>
-              <Reveal delay={180 + i * 100}>
-                <PaperCard className="relative flex flex-col gap-4 border-transparent bg-foreground p-5 transition-transform duration-300 hover:-translate-y-1 sm:p-6">
+              <Reveal delay={360 + i * 100}>
+                <PaperCard
+                  className="animate-card-float relative flex flex-col gap-4 overflow-visible rounded-2xl border-transparent bg-foreground p-5 transition-transform duration-300 hover:-translate-y-1 sm:p-6"
+                  style={{
+                    animationDelay: `${1.2 + i * 0.35}s`,
+                    boxShadow: '0 32px 40px -16px rgba(246, 241, 230, 0.55)',
+                  }}
+                >
+                  <CardGlow />
                   {i === 0 ? (
                     <Tape
                       className="-top-3 left-8 -rotate-2"
@@ -155,6 +180,26 @@ export function ImpactAndTestimonials() {
           ))}
         </ul>
       </div>
+
+      <style>{`
+        @keyframes card-float {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-7px);
+          }
+        }
+        .animate-card-float {
+          animation: card-float 5.5s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-card-float {
+            animation: none;
+          }
+        }
+      `}</style>
     </section>
   )
 }

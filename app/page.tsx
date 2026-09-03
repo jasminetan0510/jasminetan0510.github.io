@@ -16,7 +16,7 @@ export default function Page() {
     <>
       <SiteHeader />
       <Hero />
-      <Currently />
+      {/* <Currently /> */}
       <ImpactAndTestimonials />
       {/* <ImpactStats /> */}
       <main>

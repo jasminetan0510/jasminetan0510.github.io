@@ -175,9 +175,9 @@ export function Hero() {
               balance lets the browser pick break points that keep the
               last line from being that short. */}
           <Reveal delay={280}>
-            <p className="max-w-[36ch] text-balance font-sans text-lg leading-snug font-light text-muted-foreground sm:text-xl lg:text-2xl">
-              My favorite problems sit between people and process: how can we
-              build tech that gives time back?
+            <p className="text-balance font-sans text-lg leading-snug font-light text-muted-foreground sm:text-xl lg:text-2xl">
+              My favorite problems sit between people and process: 
+              How can we build tech that gives time back?
             </p>
           </Reveal>
 

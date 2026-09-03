@@ -120,7 +120,7 @@ export function ImpactAndTestimonials() {
       <ParallaxBackdrop variant="seabreeze" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
-          <SectionHeading index="01" title="Key Impact" />
+          <SectionHeading index="02" title="Key Impact" />
         </Reveal>
 
         <div className="mt-10 grid grid-cols-2 gap-5 sm:mt-12 sm:grid-cols-4 sm:gap-6">

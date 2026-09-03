@@ -267,9 +267,8 @@ export function FeaturedProjects() {
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
-            index="02"
+            index="01"
             title="Featured projects"
-            // note="the full lineup, no digging required"
           />
         </Reveal>
 

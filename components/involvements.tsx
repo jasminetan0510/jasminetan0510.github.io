@@ -66,9 +66,8 @@ export function Involvements() {
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
-            index="03"
+            index="04"
             title="My involvements"
-            // note="organizations i love"
           />
         </Reveal>
 

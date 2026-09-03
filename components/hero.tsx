@@ -137,7 +137,7 @@ export function Hero() {
 
           <Reveal delay={90}>
             <p className="eyebrow text-muted-foreground">
-              Jasmine Tan — Portfolio, 2026
+              Jasmine Tan — Portfolio
             </p>
           </Reveal>
 
@@ -185,7 +185,7 @@ export function Hero() {
             </p>
           </Reveal>
 
-          <Reveal delay={380}>
+          {/* <Reveal delay={380}>
             <div className="flex flex-col gap-3 text-sm leading-relaxed text-foreground/85 sm:text-[0.95rem]">
               <p className="max-w-prose">
                 I&apos;m a rising fourth-year at UCSB. I like working with people,
@@ -195,7 +195,7 @@ export function Hero() {
                 Outside of that, I enjoy working with kids, lifting at the gym, exploring local trails + beaches, and conducting fun craft experiments.
               </p>
             </div>
-          </Reveal>
+          </Reveal> */}
 
           <Reveal delay={480}>
             <div className="flex flex-wrap items-center gap-3 pt-1">
@@ -209,12 +209,12 @@ export function Hero() {
                   aria-hidden="true"
                 />
               </a>
-              <a
+              {/* <a
                 href="#playground"
                 className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95 hover:[animation:wiggle_0.4s_ease-in-out]"
               >
                 Playground: Under Construction
-              </a>
+              </a> */}
             </div>
           </Reveal>
         </div>
@@ -269,7 +269,7 @@ export function Hero() {
                   // TODO: drop your own photo at public/images/polaroid-portrait.png
                   // Recommended: a square-ish crop, at least 500x500px.
                   <Image
-                    src="/images/polaroid-portrait.png"
+                    src="/images/headshot2.png"
                     alt="Jasmine Tan"
                     fill
                     sizes="(max-width: 640px) 240px, 264px"

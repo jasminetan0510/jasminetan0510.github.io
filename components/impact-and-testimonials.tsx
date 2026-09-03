@@ -1,6 +1,6 @@
 'use client'
 
-import { PaperCard, Tape } from '@/components/scrapbook'
+import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
 import { ParallaxBackdrop } from '@/components/parallax-backdrop'
 import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
@@ -109,9 +109,11 @@ export function ImpactAndTestimonials() {
       <ParallaxBackdrop variant="seabreeze" speed={0.14} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
-          <h2 className="display text-4xl leading-[1.02] text-balance sm:text-5xl">
-            Key Impacts
-          </h2>
+        <SectionHeading
+            index="01"
+            title="Key Impact"
+            // note="the full lineup, no digging required"
+          />
         </Reveal>
 
         <Reveal delay={80}>

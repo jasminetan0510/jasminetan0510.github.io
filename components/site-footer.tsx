@@ -13,7 +13,7 @@ export function SiteFooter() {
       id="contact"
       className="relative scroll-mt-8 overflow-hidden bg-[#faf7f2]"
     >
-      <ParallaxBackdrop variant="seabreeze" speed={0.1} />
+      <ParallaxBackdrop variant="cococream" speed={0.1} />
       <div className="relative mx-auto w-full max-w-5xl px-5 pt-14 pb-24 sm:px-8 sm:pt-20 sm:pb-28">
         <div className="relative border-t border-border pt-12 sm:pt-14">
           <Tape

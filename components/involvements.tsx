@@ -62,13 +62,13 @@ export function Involvements() {
       id="involvements"
       className="relative scroll-mt-8 overflow-hidden bg-secondary py-14 sm:py-20"
     >
-      <ParallaxBackdrop variant="cococream" speed={0.16} />
+      <ParallaxBackdrop variant="seabreeze" speed={0.16} />
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
             index="03"
             title="My involvements"
-            note="organizations i love"
+            // note="organizations i love"
           />
         </Reveal>
 

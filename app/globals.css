@@ -41,37 +41,46 @@
 :root {
   color-scheme: light;
 
-  /* Neutral cream/white/gray palette — no green, no pink */
-  --background: oklch(0.98 0.006 90);
-  --foreground: oklch(0.24 0.01 90);
-  --card: oklch(0.995 0.003 90);
-  --card-foreground: oklch(0.24 0.01 90);
-  --popover: oklch(0.995 0.003 90);
-  --popover-foreground: oklch(0.24 0.01 90);
+  /* Warm ivory / near-black ink palette — pulled from the "Ananya"
+     portfolio reference (ivory paper, warm near-black ink, greige
+     surfaces, almost no saturated accent). Hue nudged from 90 to
+     ~65-75 across the board versus the old values, which read a touch
+     cooler/grayer than the reference's warmth. */
+  --background: oklch(0.97 0.008 75);
+  --foreground: oklch(0.19 0.015 65);
+  --card: oklch(0.985 0.005 75);
+  --card-foreground: oklch(0.19 0.015 65);
+  --popover: oklch(0.985 0.005 75);
+  --popover-foreground: oklch(0.19 0.015 65);
 
-  /* charcoal — primary (was sage green) */
-  --primary: oklch(0.32 0.012 90);
-  --primary-foreground: oklch(0.98 0.004 90);
+  /* ink — primary. Same value as foreground on purpose: the reference
+     doesn't use a separate "brand color" for CTAs, it just uses the ink
+     itself at full strength. */
+  --primary: oklch(0.19 0.015 65);
+  --primary-foreground: oklch(0.97 0.006 75);
 
-  --secondary: oklch(0.94 0.006 90);
-  --secondary-foreground: oklch(0.3 0.01 90);
-  --muted: oklch(0.94 0.006 90);
-  --muted-foreground: oklch(0.42 0.008 90);
+  /* warm greige — secondary/muted surfaces */
+  --secondary: oklch(0.89 0.014 75);
+  --secondary-foreground: oklch(0.24 0.012 70);
+  --muted: oklch(0.89 0.014 75);
+  --muted-foreground: oklch(0.45 0.012 65);
 
-  /* warm taupe — accent (was blush pink) */
-  --accent: oklch(0.88 0.012 80);
-  --accent-foreground: oklch(0.3 0.01 90);
-  --blush: oklch(0.88 0.012 80);
+  /* accent stays a light neutral surface (it's used as a full section
+     background elsewhere, e.g. the Hero) rather than becoming a bold
+     color — the reference is close to monochrome, so this just leans
+     slightly warmer/deeper than the old taupe instead of introducing a
+     new saturated hue. */
+  --accent: oklch(0.9 0.016 70);
+  --accent-foreground: oklch(0.24 0.012 70);
+  --blush: oklch(0.9 0.016 70);
 
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.24 0.01 90 / 13%);
-  --input: oklch(0.24 0.01 90 / 19%);
-  --ring: oklch(0.32 0.012 90);
+  --border: oklch(0.19 0.015 65 / 13%);
+  --input: oklch(0.19 0.015 65 / 19%);
+  --ring: oklch(0.19 0.015 65);
 
-  /* paper tape — neutral warm gray (was mint) */
-  --tape: oklch(0.9 0.008 90 / 72%);
-  /* soft warm-gray highlighter (was butter yellow) */
-  --highlight: oklch(0.91 0.01 85 / 85%);
+  --tape: oklch(0.86 0.012 75 / 72%);
+  --highlight: oklch(0.87 0.014 70 / 85%);
 
   --radius: 0.5rem;
 }
@@ -79,34 +88,34 @@
 .dark {
   color-scheme: dark;
 
-  /* Same neutral cream/gray/warm family, inverted for a dark room rather
-     than switched to a blue-tinted "dark mode" palette. */
-  --background: oklch(0.19 0.008 90);
-  --foreground: oklch(0.94 0.008 90);
-  --card: oklch(0.23 0.008 90);
-  --card-foreground: oklch(0.94 0.008 90);
-  --popover: oklch(0.23 0.008 90);
-  --popover-foreground: oklch(0.94 0.008 90);
+  /* Same warm ivory/ink family, inverted for a dark room — hue nudged
+     to match the light-mode retune above instead of the cooler ~90. */
+  --background: oklch(0.17 0.012 65);
+  --foreground: oklch(0.94 0.01 75);
+  --card: oklch(0.21 0.012 65);
+  --card-foreground: oklch(0.94 0.01 75);
+  --popover: oklch(0.21 0.012 65);
+  --popover-foreground: oklch(0.94 0.01 75);
 
-  --primary: oklch(0.88 0.01 90);
-  --primary-foreground: oklch(0.18 0.01 90);
+  --primary: oklch(0.9 0.012 75);
+  --primary-foreground: oklch(0.16 0.012 65);
 
-  --secondary: oklch(0.27 0.008 90);
-  --secondary-foreground: oklch(0.9 0.008 90);
-  --muted: oklch(0.27 0.008 90);
-  --muted-foreground: oklch(0.65 0.01 90);
+  --secondary: oklch(0.26 0.012 65);
+  --secondary-foreground: oklch(0.9 0.01 75);
+  --muted: oklch(0.26 0.012 65);
+  --muted-foreground: oklch(0.64 0.012 70);
 
-  --accent: oklch(0.32 0.014 80);
-  --accent-foreground: oklch(0.9 0.008 90);
-  --blush: oklch(0.32 0.014 80);
+  --accent: oklch(0.3 0.016 60);
+  --accent-foreground: oklch(0.9 0.01 75);
+  --blush: oklch(0.3 0.016 60);
 
   --destructive: oklch(0.65 0.2 27);
-  --border: oklch(0.94 0.008 90 / 14%);
-  --input: oklch(0.94 0.008 90 / 20%);
-  --ring: oklch(0.88 0.01 90);
+  --border: oklch(0.94 0.01 75 / 14%);
+  --input: oklch(0.94 0.01 75 / 20%);
+  --ring: oklch(0.9 0.012 75);
 
-  --tape: oklch(0.35 0.012 90 / 60%);
-  --highlight: oklch(0.4 0.02 85 / 55%);
+  --tape: oklch(0.33 0.014 65 / 60%);
+  --highlight: oklch(0.38 0.022 65 / 55%);
 }
 
 @layer base {
@@ -143,13 +152,13 @@
   height: 1.5rem;
   width: 5rem;
   background-color: var(--tape);
-  box-shadow: 0 1px 2px oklch(0.24 0.01 90 / 12%);
+  box-shadow: 0 1px 2px oklch(0.19 0.015 65 / 12%);
 }
 
 @utility paper-edge {
   box-shadow:
-    0 1px 0 oklch(0.24 0.01 90 / 8%),
-    0 8px 24px -12px oklch(0.24 0.01 90 / 20%);
+    0 1px 0 oklch(0.19 0.015 65 / 8%),
+    0 8px 24px -12px oklch(0.19 0.015 65 / 20%);
 }
 
 /* Playground: bored-button idea reveal */

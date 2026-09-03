@@ -4,13 +4,23 @@ import { useParallax } from '@/lib/use-parallax'
 import { cn } from '@/lib/utils'
 
 /**
- * Flat, solid color blocks — not gradients — built from the existing
- * theme tokens so the palette stays in the site's neutral cream/
- * charcoal/taupe family. True color blocking reads from a hard edge
- * between adjacent panels, not a blend, so keep these flat.
+ * Flat, solid color blocks — not gradients — built to sit *behind* a
+ * section and drift at a different scroll speed than its foreground
+ * content. True color blocking reads from a hard edge between adjacent
+ * panels, not a blend, so keep these flat.
+ *
+ * These intentionally do NOT reuse --background/--accent/etc. directly:
+ * if this layer matched its section's own background exactly, the
+ * parallax drift would be invisible (same color moving behind same
+ * color shows nothing). Each variant needs to differ *slightly* from
+ * the sections it's used in so the motion actually reads. seabreeze
+ * used to do that with a hardcoded blue-gray (#e5edf0) that fell
+ * outside the ivory/ink palette entirely — swapped for a warm oat/
+ * greige that still contrasts against the surrounding cream sections
+ * but stays in-family.
  */
 const backdropVariants = {
-  seabreeze: 'bg-[#e5edf0]',
+  seabreeze: 'bg-[#ece4d6]',
   cococream: 'bg-[#faf7f2]',
 } as const
 

@@ -23,7 +23,7 @@ export default function Page() {
       <main>
         <FeaturedProjects />
         <ImpactAndTestimonials />
-        <Toolkit />
+        {/* <Toolkit /> */}
         {/* <Testimonials /> */}
         <Involvements />
         {/* <Playground /> */}

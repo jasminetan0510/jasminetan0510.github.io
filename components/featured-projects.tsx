@@ -49,7 +49,7 @@ const projects = [
     outcome:
       'Introduced a same-day PR-review norm that eliminated the review backlogs we\u2019d hit on a prior project \u2014 delivered 100% of committed work on schedule.',
     stack: ['React', 'Spring Boot'],
-    image: '/images/project-kit.png',
+    image: '/images/project-ucsb-dining.png',
     href: 'https://github.com/ucsb-cs156-f25/proj-dining-f25-05',
     caseStudyDraft: {
       problem: 'TODO — what was broken in the legacy app before your team touched it?',
@@ -111,7 +111,7 @@ const projects = [
     outcome:
       'OCR receipt scanning and barcode lookup cut manual item entry to near-zero, backed by Supabase for storage and auth.',
     stack: ['React Native', 'Expo', 'FastAPI', 'Supabase'],
-    image: '/images/project-ucsb-dining.png',
+    image: '/images/project-kit.png',
     href: 'https://github.com/ucsb-cs184-w26/team12-KIT',
     caseStudyDraft: {
       problem: 'TODO — what was broken about tracking kitchen inventory here?',

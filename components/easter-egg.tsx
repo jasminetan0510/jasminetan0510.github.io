@@ -42,7 +42,7 @@ export function EasterEgg() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const expected = KONAMI[progress]
-      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
+      const key = e.key && e.key.length === 1 ? e.key.toLowerCase() : e.key
       if (key === expected) {
         const next = progress + 1
         if (next === KONAMI.length) {

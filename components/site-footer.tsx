@@ -2,6 +2,7 @@ import { Download, Linkedin, Mail } from 'lucide-react'
 import { CharacterParade } from '@/components/character-parade'
 import { GithubMark, Tape } from '@/components/scrapbook'
 import { ParallaxBackdrop } from '@/components/parallax-backdrop'
+import { ContactModal } from '@/components/contact-modal'
 
 const EMAIL = 'jasminetan0510@gmail.com'
 const GITHUB_USER = 'jasminetan0510'
@@ -70,6 +71,7 @@ export function SiteFooter() {
         {/* Saved characters hop in place along the bottom of the footer
             instead of walking across the whole page. */}
         <CharacterParade />
+        <ContactModal />
       </div>
     </footer>
   )

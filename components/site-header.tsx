@@ -3,6 +3,7 @@
 import { Download, Star } from 'lucide-react'
 import { useLenis } from 'lenis/react'
 import { useSound } from '@/components/sound-provider'
+import { openContactForm } from '@/components/contact-modal'
 
 const navLinks = [
   { label: 'Impact', href: '#impact', num: '01' },
@@ -92,13 +93,16 @@ export function SiteHeader() {
             <Download className="size-3.5" aria-hidden="true" />
             Resume
           </a>
-          <a
-            href="#contact"
-            onClick={(e) => handleAnchorClick(e, '#contact')}
+          <button
+            type="button"
+            onClick={() => {
+              playClick()
+              openContactForm()
+            }}
             className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-105 hover:shadow-[0_0_22px_-2px_var(--ring)] active:scale-95"
           >
             Get in touch
-          </a>
+          </button>
         </div>
       </div>
     </header>

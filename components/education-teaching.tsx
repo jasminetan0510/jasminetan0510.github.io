@@ -1,5 +1,5 @@
 import { Reveal } from '@/components/reveal'
-import { SectionHeading, Tape } from '@/components/scrapbook'
+import { SectionHeading } from '@/components/scrapbook'
 
 /**
  * Education + teaching, styled as a graded worksheet: header line, ruled
@@ -96,7 +96,6 @@ export function EducationTeaching({ index = '04' }: { index?: string }) {
 
         <Reveal delay={80}>
           <article className="paper-edge relative mt-8 rounded-sm bg-card sm:mt-10">
-            <Tape className="-top-3 left-12 -rotate-3" />
 
             {/* Worksheet header line */}
             <div className="flex flex-wrap items-end gap-x-8 gap-y-1 border-b border-foreground/20 px-6 pt-7 pb-3 text-sm text-muted-foreground sm:px-10">

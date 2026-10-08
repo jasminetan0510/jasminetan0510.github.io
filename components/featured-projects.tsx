@@ -3,7 +3,7 @@
 import { ArrowRight, ArrowUpRight, X } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { SectionHeading, Tape } from '@/components/scrapbook'
+import { SectionHeading } from '@/components/scrapbook'
 import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
 
@@ -367,7 +367,6 @@ export function FeaturedProjects() {
             onClick={(event) => event.stopPropagation()}
             className="journal-panel paper-edge relative my-8 w-full max-w-2xl -rotate-[0.4deg] rounded-sm border border-border bg-card p-6 sm:my-0 sm:p-10"
           >
-            <Tape className="-top-3 left-10 -rotate-3" />
 
             <button
               ref={closeButtonRef}

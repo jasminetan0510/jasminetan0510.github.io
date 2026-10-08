@@ -15,57 +15,38 @@ export function GithubMark({ className }: { className?: string }) {
   )
 }
 
-const tapeTones = {
-  mint: 'var(--tape)',
-  blush: 'oklch(0.87 0.01 60 / 78%)',
-  butter: 'oklch(0.91 0.01 90 / 78%)',
-} as const
-
-/** A strip of washi tape. Position it with className (e.g. "-top-3 left-6 -rotate-3"). */
-export function Tape({
-  className,
-  label,
-  tone = 'mint',
-}: {
+/**
+ * Washi tape has been retired from the design. This stays as a no-op so
+ * any file that still renders <Tape /> keeps compiling and simply shows
+ * nothing. Safe to delete once no file imports it (grep for "Tape").
+ */
+export function Tape(_props: {
   className?: string
   label?: string
-  tone?: keyof typeof tapeTones
+  tone?: 'mint' | 'blush' | 'butter'
 }) {
-  return (
-    <span
-      aria-hidden="true"
-      style={{ backgroundColor: tapeTones[tone] }}
-      className={cn(
-        'tape-strip flex items-center justify-center rounded-[2px] eyebrow text-[10px] text-foreground/45',
-        className,
-      )}
-    >
-      {label}
-    </span>
-  )
+  return null
 }
 
+/**
+ * Section title. No number or divider line. `index` is still accepted (and
+ * ignored) so existing <SectionHeading index="01" … /> calls keep working.
+ * `note`, if given, now sits under the title as a small muted line.
+ */
 export function SectionHeading({
-  index,
   title,
   note,
 }: {
-  index: string
+  index?: string
   title: React.ReactNode
   note?: string
 }) {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-4">
-        <span className="eyebrow text-primary">{index}</span>
-        <span aria-hidden="true" className="h-px flex-1 bg-border" />
-        {note ? (
-          <p className="eyebrow text-right text-muted-foreground">{note}</p>
-        ) : null}
-      </div>
+    <div className="flex flex-col gap-2">
       <h2 className="display text-4xl leading-[1.02] text-balance sm:text-5xl">
         {title}
       </h2>
+      {note ? <p className="eyebrow text-muted-foreground">{note}</p> : null}
     </div>
   )
 }
@@ -102,7 +83,7 @@ export function CarouselText({
   )
 }
 
-/** Paper card with a slightly off-kilter, taped-down feel. */
+/** Paper card with a slightly off-kilter feel. */
 export function PaperCard({
   className,
   children,

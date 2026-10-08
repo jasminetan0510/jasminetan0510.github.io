@@ -2,17 +2,17 @@
 
 import { Download, Star } from 'lucide-react'
 import { useLenis } from 'lenis/react'
-import { useSound } from '@/components/sound-provider'
 import { openContactForm } from '@/components/contact-modal'
 import { SocialLinks } from '@/components/social-links'
 
-<SocialLinks className="hidden sm:flex" />
-
+// Same order as the sections on the page (see app/page.tsx).
 const navLinks = [
-  { label: 'Impact', href: '#impact', num: '01' },
-  { label: 'Projects', href: '#projects', num: '02' },
-  { label: 'Involvements', href: '#involvements', num: '04' },
-  // { label: 'Playground', href: '#playground', num: '05' },
+  { label: 'Projects', href: '#projects', num: '01' },
+  { label: 'Experience', href: '#experience', num: '02' },
+  { label: 'Impact', href: '#impact', num: '03' },
+  { label: 'Education', href: '#education', num: '04' },
+  { label: 'Involvements', href: '#involvements', num: '05' },
+  // { label: 'Playground', href: '#playground', num: '06' },
 ]
 
 /**
@@ -25,10 +25,14 @@ const navLinks = [
  * *also* grows/glows further on its own hover, on top of the container's
  * effect — so the closer you get to something clickable, the more it
  * invites the click.
+ *
+ * Fitting everything: the five section links show from lg (1024px) up;
+ * the social icons (Instagram / GitHub / LinkedIn) join them from xl
+ * (1280px), where the pill also widens. Below those widths there isn't
+ * room in one row; the footer still links GitHub and LinkedIn.
  */
 export function SiteHeader() {
   const lenis = useLenis()
-  const { playClick } = useSound()
 
   // Anchor links jump instantly by default — Lenis only smooths wheel/
   // programmatic scroll, not native <a href="#..."> clicks. Route them
@@ -49,7 +53,7 @@ export function SiteHeader() {
     <header className="pointer-events-none fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-6">
       <div
         className="
-          group pointer-events-auto flex w-full max-w-5xl items-center justify-between
+          group pointer-events-auto flex w-full max-w-5xl items-center justify-between xl:max-w-6xl
           gap-4 rounded-full border border-white/10 bg-background/30
           px-6 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]
           backdrop-blur-xl backdrop-saturate-150
@@ -69,17 +73,14 @@ export function SiteHeader() {
 
         <nav
           aria-label="Section navigation"
-          className="hidden items-center gap-2 md:flex"
+          className="hidden items-center gap-1 lg:flex"
         >
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              onClick={(e) => {
-                playClick()
-                handleAnchorClick(e, link.href)
-              }}
-              className="group/link eyebrow flex items-center gap-1.5 rounded-full px-3 py-1.5 text-muted-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
+              onClick={(e) => handleAnchorClick(e, link.href)}
+              className="group/link eyebrow flex items-center gap-1.5 rounded-full px-2 py-1.5 text-muted-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
             >
               <Star className="w-4 h-4 text-primary shrink-0 transition-all duration-200 ease-out group-hover/link:drop-shadow-[0_0_6px_var(--ring)]" />
               {link.label}
@@ -88,9 +89,12 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-4">
+          <SocialLinks className="hidden xl:flex" />
+          <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/15 xl:block" />
           <a
             href="/resume.pdf"
             download
+            data-goatcounter-click="resume-click"
             className="hidden items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-medium text-foreground/80 transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)] sm:inline-flex"
           >
             <Download className="size-3.5" aria-hidden="true" />
@@ -98,10 +102,8 @@ export function SiteHeader() {
           </a>
           <button
             type="button"
-            onClick={() => {
-              playClick()
-              openContactForm()
-            }}
+            onClick={() => openContactForm()}
+            data-goatcounter-click="contact-open"
             className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-105 hover:shadow-[0_0_22px_-2px_var(--ring)] active:scale-95"
           >
             Get in touch

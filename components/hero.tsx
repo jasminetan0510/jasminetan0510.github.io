@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { ParallaxBackdrop } from '@/components/parallax-backdrop'
-import { Tape } from '@/components/scrapbook'
 import { CloudNote } from '@/components/cloud-note'
 import { ScrollCue } from '@/components/scroll-cue'
 import { cn } from '@/lib/utils'
@@ -221,7 +220,6 @@ export function Hero() {
             className="hero-enter relative col-span-full w-[15rem] sm:w-[17rem] lg:w-[15rem] [@media(min-width:1024px)_and_(min-height:860px)]:w-[17rem] [@media(min-width:1024px)_and_(max-height:640px)]:w-[13rem] lg:col-span-1 lg:col-start-2 lg:row-span-2 lg:row-start-1"
             style={delay(160)}
           >
-            <Tape className="-top-3 left-1/2 -translate-x-1/2 -rotate-2" />
             <div className="paper-edge rounded-sm bg-card p-3 pb-4 -rotate-1 transition-transform duration-300 hover:rotate-0">
               <div className="relative aspect-square overflow-hidden bg-muted">
                 <Image

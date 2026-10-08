@@ -47,7 +47,9 @@ export default async function ProjectPage({ params }: Props) {
   const i = projects.findIndex((p) => p.slug === project.slug)
   const prev = projects[(i - 1 + projects.length) % projects.length]
   const next = projects[(i + 1) % projects.length]
-  const cs = project.caseStudy
+  // Drafts preview locally (npm run dev) but never appear on the live site.
+  const isDraft = !project.caseStudy && process.env.NODE_ENV === 'development' && !!project.caseStudyDraft
+  const cs = project.caseStudy ?? (isDraft ? project.caseStudyDraft : undefined)
 
   return (
     <>
@@ -81,6 +83,14 @@ export default async function ProjectPage({ params }: Props) {
           <div className="paper-edge relative aspect-[16/9] overflow-hidden rounded-sm border border-foreground/10 bg-muted">
             <ProjectImage project={project} sizes="(max-width: 768px) 100vw, 720px" priority />
           </div>
+
+          {isDraft ? (
+            <p className="mt-8 rounded-sm border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <strong>Draft preview</strong> (only visible locally). Fill in the TODOs in{' '}
+              <code>lib/projects.ts</code>, then rename <code>caseStudyDraft</code> to <code>caseStudy</code> to
+              publish.
+            </p>
+          ) : null}
 
           <div className="mt-10 flex flex-col gap-9 text-[1.02rem] leading-relaxed text-foreground/85">
             <CaseSection title="Overview">
@@ -137,6 +147,23 @@ export default async function ProjectPage({ params }: Props) {
                 ))}
               </div>
             </section>
+          ) : null}
+
+          {project.links?.length ? (
+            <div className="mt-10 flex flex-wrap gap-3">
+              {project.links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary"
+                >
+                  {l.label}
+                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                </a>
+              ))}
+            </div>
           ) : null}
 
           {project.href ? (

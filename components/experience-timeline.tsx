@@ -28,7 +28,7 @@ const WORK: Role[] = [
     when: 'Fall 2026 – Winter 2027',
     current: true,
     blurb:
-      'Leading a **five-person team** building a tenant-side leasing app on AppFolio\u2019s property API, with weekly sponsor check-ins.',
+      'Leading a **five-person team** building TenantFolio, a tenant-side companion to AppFolio\u2019s leasing platform on their property API, with weekly sponsor check-ins.',
     tags: ['Ruby on Rails', 'Team leadership'],
   },
   {

@@ -25,12 +25,14 @@ import { cn } from '@/lib/utils'
 
 // Must match the header nav (components/site-header.tsx), in the same order.
 const TABS = ['projects', 'experience', 'involvements']
-const MIN_MS = 4200
-const MAX_MS = 6000
-const TYPE_START_MS = 500
-const MS_PER_CHAR = 75
-const CLOSE_MS = 700
-const OPEN_MS = 1200
+// Normal speed: about 2.5s from first paint to fully open (well under
+// recruiters' patience). Use ?boot=slow to test (see readSlowFactor).
+const MIN_MS = 1300
+const MAX_MS = 2400
+const TYPE_START_MS = 150
+const MS_PER_CHAR = 30 // 3 tabs ≈ 32 chars ≈ 1s of typing
+const CLOSE_MS = 420
+const OPEN_MS = 750
 
 /**
  * Testing aid: ?boot=slow plays everything 4x slower, ?boot=<n> n times
@@ -129,7 +131,7 @@ export function BootScreen() {
         skipRef.current || elapsed > MAX_MS * f || (loaded && fontsReady && elapsed > MIN_MS * f)
       // Ease toward 92% while waiting, then sprint to 100 once ready.
       const target = ready ? 100 : 92 * (1 - Math.exp(-elapsed / (MIN_MS * f * 0.45)))
-      p += (target - p) * Math.min(1, dt * (ready ? 4 / f : 6 / f))
+      p += (target - p) * Math.min(1, dt * (ready ? 9 / f : 6 / f))
       if (ready && p > 99.4) p = 100
 
       setProgress(p)
@@ -140,7 +142,7 @@ export function BootScreen() {
       )
 
       if (p >= 100) {
-        timers.push(window.setTimeout(finish, skipRef.current ? 0 : 400 * f))
+        timers.push(window.setTimeout(finish, skipRef.current ? 0 : 160 * f))
         return
       }
       raf = requestAnimationFrame(tick)

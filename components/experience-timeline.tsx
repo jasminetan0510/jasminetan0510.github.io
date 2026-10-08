@@ -140,7 +140,7 @@ export function ExperienceTimeline() {
               <span className="display">UC Santa Barbara</span>
               <span className="text-foreground/70">
                 {' '}
-                · B.S. Computer Science · Minor in Science & Math Education · June 2027
+                · B.S. Computer Science · Science & Math Education Minor · Technology Management Program · June 2027
               </span>
             </p>
           </div>

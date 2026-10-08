@@ -1,5 +1,6 @@
 'use client'
 
+import { useLenis } from 'lenis/react'
 import { useEffect, useRef, useState } from 'react'
 import { BOOT_EVENT, BOOT_SESSION_KEY } from '@/lib/boot'
 import { cn } from '@/lib/utils'
@@ -22,13 +23,28 @@ import { cn } from '@/lib/utils'
  * underneath is fully server-rendered for crawlers and screen readers.
  */
 
-const TABS = ['projects', 'experience', 'impact', 'education', 'involvements']
-const MIN_MS = 1600
-const MAX_MS = 3200
-const TYPE_START_MS = 250
-const MS_PER_CHAR = 32
-const CLOSE_MS = 420 // keep in sync with .boot-crt-off / .boot-line in globals.css
-const OPEN_MS = 750
+// Must match the header nav (components/site-header.tsx), in the same order.
+const TABS = ['projects', 'experience', 'involvements']
+const MIN_MS = 4200
+const MAX_MS = 6000
+const TYPE_START_MS = 500
+const MS_PER_CHAR = 75
+const CLOSE_MS = 700
+const OPEN_MS = 1200
+
+/**
+ * Testing aid: ?boot=slow plays everything 4x slower, ?boot=<n> n times
+ * slower (?boot=1 = normal speed). Any ?boot=… also forces the screen to
+ * play even if it already ran this session (see lib/boot.ts).
+ */
+function readSlowFactor() {
+  if (typeof window === 'undefined') return 1
+  const v = new URLSearchParams(window.location.search).get('boot')
+  if (v === null) return 1
+  if (v === 'slow') return 4
+  const n = Number(v)
+  return Number.isFinite(n) && n > 0 ? n : 1
+}
 
 type Phase = 'loading' | 'closing' | 'opening' | 'done'
 
@@ -37,6 +53,30 @@ export function BootScreen() {
   const [progress, setProgress] = useState(0)
   const [typed, setTyped] = useState(0)
   const skipRef = useRef(false)
+  const lenis = useLenis()
+  // Read after mount (not during render) so server and client HTML match.
+  const [slow, setSlow] = useState(1)
+  useEffect(() => setSlow(readSlowFactor()), [])
+
+  // Always open at the very top. Without this, a refresh restores the old
+  // scroll position (or jumps to a #section left in the URL) behind the
+  // loading screen, so the site appeared already scrolled down once it
+  // opened. Lenis is paused while the screen is up so wheel/touch input
+  // can't move the page underneath it either.
+  useEffect(() => {
+    if (phase === 'done') return
+    if (phase === 'opening') {
+      lenis?.start()
+      lenis?.resize() // re-measure page height now that everything is laid out
+      if ('scrollRestoration' in history) history.scrollRestoration = 'auto'
+      return
+    }
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search)
+    window.scrollTo(0, 0)
+    lenis?.scrollTo(0, { immediate: true, force: true })
+    lenis?.stop()
+  }, [phase, lenis])
 
   useEffect(() => {
     const html = document.documentElement
@@ -57,6 +97,7 @@ export function BootScreen() {
     window.addEventListener('pointerdown', skip)
     document.fonts?.ready.then(() => (fontsReady = true))
 
+    const f = slow
     const totalChars = TABS.join('').length
     const timers: number[] = []
     const start = performance.now()
@@ -75,8 +116,8 @@ export function BootScreen() {
             sessionStorage.setItem(BOOT_SESSION_KEY, '1')
           } catch {}
           window.dispatchEvent(new Event(BOOT_EVENT))
-          timers.push(window.setTimeout(() => setPhase('done'), OPEN_MS))
-        }, CLOSE_MS),
+          timers.push(window.setTimeout(() => setPhase('done'), OPEN_MS * f))
+        }, CLOSE_MS * f),
       )
     }
 
@@ -85,21 +126,21 @@ export function BootScreen() {
       const dt = (now - last) / 1000
       last = now
       const ready =
-        skipRef.current || elapsed > MAX_MS || (loaded && fontsReady && elapsed > MIN_MS)
+        skipRef.current || elapsed > MAX_MS * f || (loaded && fontsReady && elapsed > MIN_MS * f)
       // Ease toward 92% while waiting, then sprint to 100 once ready.
-      const target = ready ? 100 : 92 * (1 - Math.exp(-elapsed / 700))
-      p += (target - p) * Math.min(1, dt * (ready ? 10 : 6))
+      const target = ready ? 100 : 92 * (1 - Math.exp(-elapsed / (MIN_MS * f * 0.45)))
+      p += (target - p) * Math.min(1, dt * (ready ? 4 / f : 6 / f))
       if (ready && p > 99.4) p = 100
 
       setProgress(p)
       setTyped(
         skipRef.current
           ? totalChars
-          : Math.max(0, Math.floor((elapsed - TYPE_START_MS) / MS_PER_CHAR)),
+          : Math.max(0, Math.floor((elapsed - TYPE_START_MS * f) / (MS_PER_CHAR * f))),
       )
 
       if (p >= 100) {
-        timers.push(window.setTimeout(finish, skipRef.current ? 0 : 180))
+        timers.push(window.setTimeout(finish, skipRef.current ? 0 : 400 * f))
         return
       }
       raf = requestAnimationFrame(tick)
@@ -114,7 +155,7 @@ export function BootScreen() {
       window.removeEventListener('pointerdown', skip)
       html.style.overflow = prevOverflow
     }
-  }, [])
+  }, [slow])
 
   if (phase === 'done') return null
 
@@ -125,27 +166,37 @@ export function BootScreen() {
     <div
       aria-hidden="true"
       className={cn('boot-screen fixed inset-0 z-[100]', opening && 'pointer-events-none')}
+      // In slow test mode, switch off the 10s failsafe fade so it can't cut the test short.
+      style={slow !== 1 ? { animation: 'none' } : undefined}
     >
       {/* The "screen" is two halves so it can split open from the middle. */}
       <div
         className={cn(
-          'absolute inset-x-0 top-0 h-1/2 bg-foreground transition-transform duration-[750ms] ease-[cubic-bezier(0.76,0,0.24,1)]',
+          'absolute inset-x-0 top-0 h-1/2 bg-foreground transition-transform ease-[cubic-bezier(0.76,0,0.24,1)]',
           opening && '-translate-y-full',
         )}
+        style={{ transitionDuration: `${OPEN_MS * slow}ms` }}
       />
       <div
         className={cn(
-          'absolute inset-x-0 bottom-0 h-1/2 bg-foreground transition-transform duration-[750ms] ease-[cubic-bezier(0.76,0,0.24,1)]',
+          'absolute inset-x-0 bottom-0 h-1/2 bg-foreground transition-transform ease-[cubic-bezier(0.76,0,0.24,1)]',
           opening && 'translate-y-full',
         )}
+        style={{ transitionDuration: `${OPEN_MS * slow}ms` }}
       />
 
       {phase === 'closing' && (
-        <div className="boot-line absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-background" />
+        <div
+          className="boot-line absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-background"
+          style={{ animationDuration: `${CLOSE_MS * slow}ms` }}
+        />
       )}
 
       {!opening && (
-        <div className={cn('absolute inset-0 text-background', phase === 'closing' && 'boot-crt-off')}>
+        <div
+          className={cn('absolute inset-0 text-background', phase === 'closing' && 'boot-crt-off')}
+          style={phase === 'closing' ? { animationDuration: `${CLOSE_MS * slow}ms` } : undefined}
+        >
           <p className="absolute top-6 left-8 hidden text-sm font-medium sm:block">jasmine.tan</p>
 
           {/* Tabs type out left to right. Each word reserves its full width

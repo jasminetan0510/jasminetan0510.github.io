@@ -12,5 +12,8 @@ export const BOOT_EVENT = 'boot:done'
  * screen flash:
  * - data-boot-skip → CSS hides .boot-screen immediately
  * - data-booted    → hero entrance/arrows render in their final state
+ *
+ * Testing: add ?boot=slow (4x slower) or ?boot=<number> (e.g. ?boot=8) to
+ * the URL to force the boot screen to play, even on repeat visits.
  */
-export const BOOT_SKIP_SCRIPT = `try{var d=document.documentElement;if(sessionStorage.getItem('${BOOT_SESSION_KEY}')||matchMedia('(prefers-reduced-motion: reduce)').matches){d.setAttribute('data-boot-skip','1');d.setAttribute('data-booted','1')}}catch(e){}`
+export const BOOT_SKIP_SCRIPT = `try{var d=document.documentElement;if(!/[?&]boot=/.test(location.search)&&(sessionStorage.getItem('${BOOT_SESSION_KEY}')||matchMedia('(prefers-reduced-motion: reduce)').matches)){d.setAttribute('data-boot-skip','1');d.setAttribute('data-booted','1')}}catch(e){}`

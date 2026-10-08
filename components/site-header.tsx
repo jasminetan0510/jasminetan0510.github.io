@@ -2,17 +2,17 @@
 
 import { Download, Star } from 'lucide-react'
 import { useLenis } from 'lenis/react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { openContactForm } from '@/components/contact-modal'
 import { SocialLinks } from '@/components/social-links'
 
-// Same order as the sections on the page (see app/page.tsx).
+// All links are home-page sections, in page order. They start with "/#"
+// so they also work from the project pages (navigate home, then jump).
 const navLinks = [
-  { label: 'Projects', href: '#projects', num: '01' },
-  { label: 'Experience', href: '#experience', num: '02' },
-  { label: 'Impact', href: '#impact', num: '03' },
-  { label: 'Education', href: '#education', num: '04' },
-  { label: 'Involvements', href: '#involvements', num: '05' },
-  // { label: 'Playground', href: '#playground', num: '06' },
+  { label: 'Projects', href: '/#projects' },
+  { label: 'Experience', href: '/#experience' },
+  { label: 'Involvements', href: '/#involvements' },
 ]
 
 /**
@@ -26,13 +26,14 @@ const navLinks = [
  * effect — so the closer you get to something clickable, the more it
  * invites the click.
  *
- * Fitting everything: the five section links show from lg (1024px) up;
- * the social icons (Instagram / GitHub / LinkedIn) join them from xl
- * (1280px), where the pill also widens. Below those widths there isn't
- * room in one row; the footer still links GitHub and LinkedIn.
+ * Section links show from md (768px); the social icons join from lg
+ * (1024px).
+ * The footer still links GitHub and LinkedIn on small screens.
  */
 export function SiteHeader() {
   const lenis = useLenis()
+  const pathname = usePathname()
+  const onHome = pathname === '/'
 
   // Anchor links jump instantly by default — Lenis only smooths wheel/
   // programmatic scroll, not native <a href="#..."> clicks. Route them
@@ -40,20 +41,23 @@ export function SiteHeader() {
   // visitor has prefers-reduced-motion set, so SmoothScroll renders
   // nothing), skip preventDefault and let the native anchor jump happen —
   // that's the correct, motion-respecting fallback.
-  function handleAnchorClick(
+  //
+  // Off the home page, section links ("/#projects") just navigate home and
+  // Next.js scrolls to the section.
+  function handleNavClick(
     event: React.MouseEvent<HTMLAnchorElement>,
-    hash: string,
+    href: string,
   ) {
-    if (!lenis) return
+    if (!href.startsWith('/#') || !onHome || !lenis) return
     event.preventDefault()
-    lenis.scrollTo(hash, { offset: -16, duration: 1.3 })
+    lenis.scrollTo(href.slice(1), { offset: -16, duration: 1.3 })
   }
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-6">
       <div
         className="
-          group pointer-events-auto flex w-full max-w-5xl items-center justify-between xl:max-w-6xl
+          group pointer-events-auto flex w-full max-w-5xl items-center justify-between
           gap-4 rounded-full border border-white/10 bg-background/30
           px-6 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]
           backdrop-blur-xl backdrop-saturate-150
@@ -63,34 +67,34 @@ export function SiteHeader() {
           sm:px-8
         "
       >
-        <a
-          href="#hero"
-          onClick={(e) => handleAnchorClick(e, '#hero')}
+        <Link
+          href="/#hero"
+          onClick={(e) => handleNavClick(e, '/#hero')}
           className="eyebrow shrink-0 rounded-full px-2 py-1 text-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
         >
           jasmine.tan
-        </a>
+        </Link>
 
         <nav
           aria-label="Section navigation"
-          className="hidden items-center gap-1 lg:flex"
+          className="hidden items-center gap-1 md:flex"
         >
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
-              onClick={(e) => handleAnchorClick(e, link.href)}
-              className="group/link eyebrow flex items-center gap-1.5 rounded-full px-2 py-1.5 text-muted-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
+              onClick={(e) => handleNavClick(e, link.href)}
+              className="group/link eyebrow flex items-center gap-1.5 rounded-full px-3 py-1.5 aria-[current=page]:text-foreground text-muted-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
             >
               <Star className="w-4 h-4 text-primary shrink-0 transition-all duration-200 ease-out group-hover/link:drop-shadow-[0_0_6px_var(--ring)]" />
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className="flex shrink-0 items-center gap-4">
-          <SocialLinks className="hidden xl:flex" />
-          <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/15 xl:block" />
+          <SocialLinks className="hidden lg:flex" />
+          <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/15 lg:block" />
           <a
             href="/resume.pdf"
             download

@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { PaperCard, SectionHeading, Tape } from '@/components/scrapbook'
+import { CountUp } from '@/components/count-up'
+import { PaperCard, SectionHeading } from '@/components/scrapbook'
 import { ParallaxBackdrop } from '@/components/parallax-backdrop'
 import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
-import { useCountUp } from '@/lib/use-count-up'
 
 type Stat = {
   value: number
@@ -15,8 +15,7 @@ type Stat = {
   sublabel: string
 }
 
-// Pulled from what's already written elsewhere on the site (Caliber,
-// Featured Projects, Involvements) — no new numbers invented here.
+// Every number here matches the résumé (Oct 2026).
 const stats: Stat[] = [
   {
     value: 250,
@@ -38,7 +37,8 @@ const stats: Stat[] = [
     sublabel: 'DLS Yard Moving Sale',
   },
   {
-    value: 25,
+    // ~25 staff + 10–12 interns
+    value: 35,
     suffix: '+',
     label: 'staff & interns led',
     sublabel: 'TASA, Internal VP',
@@ -46,10 +46,8 @@ const stats: Stat[] = [
 ]
 
 // One entry per quote. `side` drives which way its chat bubble leans —
-// alternating left/right/left, per your request, purely a visual
-// rhythm (these are all "received" praise, not an actual back-and-forth
-// conversation, so the side doesn't mean sender/recipient the way it
-// would in a real messaging app).
+// alternating left/right/left, purely a visual rhythm (these are all
+// "received" praise, not an actual back-and-forth conversation).
 const testimonialGroups = [
   {
     source: 'Teammate, UCSB Project Dining',
@@ -74,23 +72,22 @@ const testimonialGroups = [
   },
 ]
 
-
-// One unified list per category — every tool is either a small logo
-// (if it has a confirmed Simple Icons entry) or a plain text chip
-// (everything else: SQL, Smartsheet, Agile/Scrum-type skills with no
-// brand mark). No separate marquee, no separate chip row duplicating
-// the same tools — one flat wrapped list per category, sized to never
-// need scrolling.
-//
-// Colors are just three opacity steps of the site's own ink color
-// (--foreground), not new hues — same "consistent with the site"
-// approach used everywhere else on the page.
+// One unified list per category — every tool is either a small logo (if
+// it has a Simple Icons entry) or a plain text chip. Logos that fail to
+// load fall back to a plain text chip automatically (see ToolChip).
 type ToolEntry =
   | { type: 'logo'; name: string; slug: string }
   | { type: 'text'; name: string }
 
-const CATEGORY_DOT_OPACITY = ['bg-foreground', 'bg-foreground/60', 'bg-foreground/35'] as const
+const CATEGORY_DOT_OPACITY = [
+  'bg-foreground',
+  'bg-foreground/70',
+  'bg-foreground/45',
+  'bg-foreground/25',
+] as const
 
+// Matches the résumé's skills section (Oct 2026), plus Ruby on Rails
+// from the AppFolio capstone.
 const toolkitCategories: { label: string; items: ToolEntry[] }[] = [
   {
     label: 'Languages',
@@ -108,11 +105,11 @@ const toolkitCategories: { label: string; items: ToolEntry[] }[] = [
     items: [
       { type: 'logo', name: 'React', slug: 'react' },
       { type: 'text', name: 'React Native' },
+      { type: 'logo', name: 'Ruby on Rails', slug: 'rubyonrails' },
       { type: 'logo', name: 'Flutter', slug: 'flutter' },
       { type: 'logo', name: 'Node.js', slug: 'nodedotjs' },
       { type: 'logo', name: 'FastAPI', slug: 'fastapi' },
       { type: 'logo', name: 'Supabase', slug: 'supabase' },
-      { type: 'text', name: 'OpenAI API' },
       { type: 'logo', name: 'GitHub', slug: 'github' },
       { type: 'logo', name: 'Webflow', slug: 'webflow' },
       { type: 'logo', name: 'Figma', slug: 'figma' },
@@ -120,11 +117,18 @@ const toolkitCategories: { label: string; items: ToolEntry[] }[] = [
     ],
   },
   {
+    label: 'AI & Data',
+    items: [
+      { type: 'logo', name: 'Claude Code', slug: 'claude' },
+      { type: 'logo', name: 'Cursor', slug: 'cursor' },
+      { type: 'text', name: 'OpenAI API' },
+    ],
+  },
+  {
     label: 'Project Management',
     items: [
       { type: 'text', name: 'Agile/Scrum' },
       { type: 'text', name: 'Sprint Planning' },
-      { type: 'text', name: 'Risk Management' },
       { type: 'text', name: 'Documentation & Reporting' },
       { type: 'logo', name: 'Notion', slug: 'notion' },
       { type: 'text', name: 'Smartsheet' },
@@ -134,15 +138,16 @@ const toolkitCategories: { label: string; items: ToolEntry[] }[] = [
   },
 ]
 
+/**
+ * One stat. The number is a CountUp: the real value is in the page HTML
+ * (so search engines, link previews and screen readers never see "0"),
+ * and it only animates visually once it scrolls into view.
+ */
 function StatItem({ stat }: { stat: Stat }) {
-  const [ref, value] = useCountUp<HTMLDivElement>(stat.value)
-
   return (
-    <div ref={ref} className="flex flex-col gap-1.5">
-      <p className="display text-3xl leading-none tabular-nums text-foreground sm:text-4xl">
-        {stat.prefix}
-        {value}
-        {stat.suffix}
+    <div className="flex flex-col gap-1.5">
+      <p className="display text-3xl leading-none text-foreground sm:text-4xl">
+        <CountUp value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
       </p>
       <p className="text-sm font-medium text-foreground/80">{stat.label}</p>
       <p className="eyebrow text-muted-foreground">{stat.sublabel}</p>
@@ -162,10 +167,9 @@ function CardGlow() {
 
 /**
  * One chip. If it's a logo item, tracks whether the image actually
- * loaded — `onError` flips `logoFailed`, which drops the <img> and
- * falls back to a plain text chip. This is what makes a future broken
- * CDN slug (like the OpenAI one just now) fail quietly instead of
- * showing a broken-image icon next to the name.
+ * loaded — `onError` flips `logoFailed`, which drops the <img> and falls
+ * back to a plain text chip, so a bad CDN slug fails quietly instead of
+ * showing a broken-image icon.
  */
 function ToolChip({ item }: { item: ToolEntry }) {
   const [logoFailed, setLogoFailed] = useState(false)
@@ -188,38 +192,19 @@ function ToolChip({ item }: { item: ToolEntry }) {
   )
 }
 
-/**
- * Simple grouped toolkit list — one row per category, each row a
- * plain flex-wrap of small logo badges and/or text chips. No scroll,
- * no animation, no custom geometry: everything is visible at once and
- * sized to fit within its card.
- */
+/** Grouped toolkit list: one row per category, everything visible at once. */
 function ToolkitList() {
   return (
     <div className="flex flex-col gap-4">
       {toolkitCategories.map((category, i) => (
         <div key={category.label}>
           <div className="mb-2 flex items-center gap-2">
-            <span className={cn('size-2 rounded-full', CATEGORY_DOT_OPACITY[i])} />
+            <span className={cn('size-2 rounded-full', CATEGORY_DOT_OPACITY[i % CATEGORY_DOT_OPACITY.length])} />
             <p className="eyebrow text-foreground/70">{category.label}</p>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {category.items.map((item) => (
-              <span
-                key={item.name}
-                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-secondary/70 px-2 py-0.5 text-[11px] text-foreground/85"
-              >
-                {item.type === 'logo' ? (
-                  <img
-                    src={`https://cdn.simpleicons.org/${item.slug}/1B1A17`}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    className="h-3.5 w-3.5"
-                  />
-                ) : null}
-                {item.name}
-              </span>
+              <ToolChip key={item.name} item={item} />
             ))}
           </div>
         </div>
@@ -229,36 +214,29 @@ function ToolkitList() {
 }
 
 /**
- * Impact stats + testimonials + toolkit, as three separate rounded
- * panels sitting side by side inside the normal page container (no
- * more full-bleed — that idea got reverted). Each panel keeps its own
- * background color, just contained now instead of edge-to-edge:
- * Numbers = bg-foreground (dark), Voices = bg-secondary (light
- * greige), Toolkit = bg-accent (light warm taupe).
+ * Impact stats + testimonials + toolkit, as three rounded panels side by
+ * side inside the normal page container: Numbers = bg-foreground (dark),
+ * Voices = bg-sky (pale sky, matching Projects), Toolkit = bg-accent
+ * (the hero's warm greige).
  *
- * Voices is redesigned as chat bubbles: each quote is a rounded bubble
- * that alternates left/right/left, with one corner flattened on the
- * side it "points" toward (bottom-left flat for left bubbles,
- * bottom-right flat for right bubbles) — the classic messaging-app
- * tail effect via asymmetric border radius, no extra SVG needed.
+ * Voices are chat bubbles: each quote alternates left/right/left, with
+ * one corner flattened on the side it "points" toward — the classic
+ * messaging-app tail via asymmetric border radius.
  */
 export function ImpactAndTestimonials() {
   return (
-    <section
-      className="relative scroll-mt-8 overflow-hidden border-y border-border bg-background py-10 sm:py-14"
-      id="impact"
-    >
+    <section className="relative scroll-mt-8 overflow-hidden bg-background py-10 sm:py-14" id="impact">
       <ParallaxBackdrop variant="cococream" speed={0.14} />
       <div className="relative mx-auto w-full max-w-6xl px-5 sm:px-8">
         <Reveal>
-          <SectionHeading index="02" title="Key Impact" />
+          <SectionHeading title="Key Impact" />
         </Reveal>
 
         <div className="mt-8 grid grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-3">
-          {/* Panel 01 — Numbers */}
+          {/* Numbers */}
           <div className="rounded-3xl bg-foreground p-6 sm:p-7">
             <Reveal delay={60}>
-              <p className="eyebrow mb-5 text-card/55">01 — Numbers</p>
+              <p className="eyebrow mb-5 text-card/55">By the numbers</p>
             </Reveal>
             <div className="grid grid-cols-2 gap-3">
               {stats.map((stat, i) => (
@@ -271,13 +249,6 @@ export function ImpactAndTestimonials() {
                     }}
                   >
                     <CardGlow />
-                    {i === 0 ? (
-                      <Tape
-                        className="-top-2.5 left-4 -rotate-2"
-                        label="numbers"
-                        tone="butter"
-                      />
-                    ) : null}
                     <StatItem stat={stat} />
                   </PaperCard>
                 </Reveal>
@@ -285,10 +256,10 @@ export function ImpactAndTestimonials() {
             </div>
           </div>
 
-          {/* Panel 02 — Voices, as chat bubbles */}
-          <div className="rounded-3xl bg-secondary p-6 sm:p-7">
+          {/* Voices, as chat bubbles */}
+          <div className="rounded-3xl bg-sky p-6 sm:p-7">
             <Reveal delay={80}>
-              <p className="eyebrow mb-5 text-muted-foreground">02 — Voices</p>
+              <p className="eyebrow mb-5 text-muted-foreground">What teammates say</p>
             </Reveal>
             <div className="flex flex-col gap-3">
               {testimonialGroups.map((group, i) => {
@@ -317,10 +288,10 @@ export function ImpactAndTestimonials() {
             </div>
           </div>
 
-          {/* Panel 03 — Toolkit */}
+          {/* Toolkit */}
           <div className="rounded-3xl bg-accent p-6 sm:p-7">
             <Reveal delay={100}>
-              <p className="eyebrow mb-5 text-foreground/60">03 — Toolkit</p>
+              <p className="eyebrow mb-5 text-foreground/60">Toolkit</p>
             </Reveal>
             <Reveal delay={320}>
               <PaperCard className="relative flex flex-col gap-3 overflow-hidden rounded-xl bg-card p-5">

@@ -1,78 +1,132 @@
-import { Download, Linkedin, Mail } from 'lucide-react'
+'use client'
+
+import { ArrowUp, Check, Copy, Download, Mail } from 'lucide-react'
+import { useLenis } from 'lenis/react'
+import { useEffect, useRef, useState } from 'react'
 import { CharacterParade } from '@/components/character-parade'
-import { GithubMark, Tape } from '@/components/scrapbook'
-import { ParallaxBackdrop } from '@/components/parallax-backdrop'
-import { ContactModal } from '@/components/contact-modal'
+import { ContactModal, openContactForm } from '@/components/contact-modal'
+import { SocialLinks } from '@/components/social-links'
 
 const EMAIL = 'jasminetan0510@gmail.com'
-const GITHUB_USER = 'jasminetan0510'
-const LINKEDIN_URL = 'https://www.linkedin.com/in/jasminetan555'
 
+/**
+ * Footer: one clear call to action, then a quiet bottom row.
+ *
+ * - Headline + a short line of context.
+ * - Actions: "Get in touch" (opens the contact form), the email address
+ *   with a one-click copy button (for people who'd rather use their own
+ *   mail app), and Résumé.
+ * - Bottom row: copyright, social icons, back to top.
+ * - No dividers, tape, or backdrop: it sits on the same ivory as the
+ *   sections above, so the page flows straight into it.
+ *
+ * ContactModal is mounted here, so the header's "Get in touch" works on
+ * every page that renders the footer (home and every project page).
+ */
 export function SiteFooter() {
+  const lenis = useLenis()
+
+  function backToTop(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault()
+    if (lenis) lenis.scrollTo(0, { duration: 1.3 })
+    else window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
-    <footer
-      id="contact"
-      className="relative scroll-mt-8 overflow-hidden bg-[#faf7f2]"
-    >
-      <ParallaxBackdrop variant="cococream" speed={0.1} />
-      <div className="relative mx-auto w-full max-w-5xl px-5 pt-14 pb-24 sm:px-8 sm:pt-20 sm:pb-28">
-        <div className="relative border-t border-border pt-12 sm:pt-14">
-          <Tape
-            className="-top-3 left-1/2 -translate-x-1/2 rotate-1"
-            label="fin"
-          />
+    <footer id="contact" className="relative scroll-mt-8 bg-background">
+      <div className="relative mx-auto w-full max-w-5xl px-5 pt-10 pb-10 sm:px-8 sm:pt-14">
+        <h2 className="display max-w-3xl text-3xl leading-[1.05] text-balance sm:text-5xl">
+          Open to PM &amp; software engineering roles — let&apos;s build something.
+        </h2>
+        <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+          Graduating June 2027 · Based in Los Angeles &amp; Santa Barbara
+        </p>
 
-          <h2 className="display text-3xl text-balance sm:text-4xl">
-            Open to PM &amp; software engineering roles — let&apos;s build
-            something.
-          </h2>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => openContactForm()}
+            data-goatcounter-click="footer-contact"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-8px_rgb(0_0_0_/_0.4)] active:translate-y-0"
+          >
+            <Mail className="size-4" aria-hidden="true" />
+            Get in touch
+          </button>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a
-              href={`mailto:${EMAIL}`}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:scale-95"
-            >
-              <Mail className="size-4" aria-hidden="true" />
-              {EMAIL}
-            </a>
-            <a
-              href={`https://github.com/${GITHUB_USER}`}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
-            >
-              <GithubMark className="size-4" />
-              github.com/{GITHUB_USER}
-            </a>
-            <a
-              href={LINKEDIN_URL}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
-            >
-              <Linkedin className="size-4" aria-hidden="true" />
-              LinkedIn
-            </a>
-            <a
-              href="/resume.pdf"
-              download
-              className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition hover:bg-secondary active:scale-95"
-            >
-              <Download className="size-4" aria-hidden="true" />
-              Resume
-            </a>
-          </div>
+          <CopyEmail />
 
-          {/* <p className="mt-10 eyebrow text-muted-foreground">
-            Jasmine.Tan
-          </p> */}
+          <a
+            href="/resume.pdf"
+            download
+            data-goatcounter-click="footer-resume"
+            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary"
+          >
+            <Download className="size-4" aria-hidden="true" />
+            Resume
+          </a>
         </div>
 
-        {/* Saved characters hop in place along the bottom of the footer
-            instead of walking across the whole page. */}
-        <CharacterParade />
-        <ContactModal />
+        {/* Saved characters hop in place along the bottom of the footer. */}
+        <div className="mt-12">
+          <CharacterParade />
+        </div>
+
+        <div className="mt-8 flex flex-col-reverse items-start gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Jasmine Tan</p>
+          <div className="flex items-center gap-3">
+            <SocialLinks />
+            <a
+              href="#top"
+              onClick={backToTop}
+              className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1 transition-colors hover:text-foreground"
+            >
+              Back to top
+              <ArrowUp className="size-3.5 transition-transform group-hover:-translate-y-0.5" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
       </div>
+
+      <ContactModal />
     </footer>
+  )
+}
+
+/** The email address as a quiet pill, with a one-click copy button. */
+function CopyEmail() {
+  const [copied, setCopied] = useState(false)
+  const timer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(EMAIL)
+      setCopied(true)
+      window.clearTimeout(timer.current)
+      timer.current = window.setTimeout(() => setCopied(false), 1800)
+    } catch {
+      // Clipboard blocked (e.g. insecure context): fall back to mail app.
+      window.location.href = `mailto:${EMAIL}`
+    }
+  }
+
+  return (
+    <span className="inline-flex items-center rounded-full border border-input pl-4 text-sm">
+      <a href={`mailto:${EMAIL}`} className="py-2.5 font-medium hover:underline">
+        {EMAIL}
+      </a>
+      <button
+        type="button"
+        onClick={copy}
+        data-goatcounter-click="email-copy"
+        aria-label={copied ? 'Email copied' : 'Copy email address'}
+        className="ml-2 grid size-10 place-items-center rounded-full text-foreground/60 transition-colors hover:bg-secondary hover:text-foreground"
+      >
+        {copied ? <Check className="size-4" aria-hidden="true" /> : <Copy className="size-4" aria-hidden="true" />}
+      </button>
+      <span className="sr-only" aria-live="polite">
+        {copied ? 'Email copied to clipboard' : ''}
+      </span>
+    </span>
   )
 }

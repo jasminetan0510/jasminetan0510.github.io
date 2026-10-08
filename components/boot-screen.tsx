@@ -23,12 +23,12 @@ import { cn } from '@/lib/utils'
  */
 
 const TABS = ['projects', 'experience', 'impact', 'education', 'involvements']
-const MIN_MS = 4200        // was 1600
-const MAX_MS = 6000        // was 3200
-const TYPE_START_MS = 500  // was 250
-const MS_PER_CHAR = 75     // was 32 (tabs finish typing ~4.2s in)
-const CLOSE_MS = 700       // was 420; keep in sync with globals.css
-const OPEN_MS = 1200       // was 750
+const MIN_MS = 1600
+const MAX_MS = 3200
+const TYPE_START_MS = 250
+const MS_PER_CHAR = 32
+const CLOSE_MS = 420 // keep in sync with .boot-crt-off / .boot-line in globals.css
+const OPEN_MS = 750
 
 type Phase = 'loading' | 'closing' | 'opening' | 'done'
 
@@ -87,8 +87,8 @@ export function BootScreen() {
       const ready =
         skipRef.current || elapsed > MAX_MS || (loaded && fontsReady && elapsed > MIN_MS)
       // Ease toward 92% while waiting, then sprint to 100 once ready.
-      const target = ready ? 100 : 92 * (1 - Math.exp(-elapsed / (MIN_MS * 0.45)))
-      p += (target - p) * Math.min(1, dt * (ready ? 4 : 6))
+      const target = ready ? 100 : 92 * (1 - Math.exp(-elapsed / 700))
+      p += (target - p) * Math.min(1, dt * (ready ? 10 : 6))
       if (ready && p > 99.4) p = 100
 
       setProgress(p)
@@ -99,7 +99,7 @@ export function BootScreen() {
       )
 
       if (p >= 100) {
-        timers.push(window.setTimeout(finish, skipRef.current ? 0 : 400)) // was 180
+        timers.push(window.setTimeout(finish, skipRef.current ? 0 : 180))
         return
       }
       raf = requestAnimationFrame(tick)
@@ -129,13 +129,13 @@ export function BootScreen() {
       {/* The "screen" is two halves so it can split open from the middle. */}
       <div
         className={cn(
-          'absolute inset-x-0 top-0 h-1/2 bg-foreground transition-transform duration-[1200ms] ease-[cubic-bezier(0.76,0,0.24,1)]',
+          'absolute inset-x-0 top-0 h-1/2 bg-foreground transition-transform duration-[750ms] ease-[cubic-bezier(0.76,0,0.24,1)]',
           opening && '-translate-y-full',
         )}
       />
       <div
         className={cn(
-          'absolute inset-x-0 bottom-0 h-1/2 bg-foreground transition-transform duration-[1200ms] ease-[cubic-bezier(0.76,0,0.24,1)]',
+          'absolute inset-x-0 bottom-0 h-1/2 bg-foreground transition-transform duration-[750ms] ease-[cubic-bezier(0.76,0,0.24,1)]',
           opening && 'translate-y-full',
         )}
       />
@@ -186,4 +186,22 @@ export function BootScreen() {
       )}
     </div>
   )
+}
+
+/**
+ * Drop on any page other than the home page (About, project pages). If a
+ * visitor lands there first, e.g. from a link on LinkedIn, then clicks
+ * through to the home page, the loading screen won't suddenly play
+ * mid-visit. It marks the session as booted, same as the screen itself.
+ */
+export function SkipBoot() {
+  useEffect(() => {
+    const html = document.documentElement
+    html.setAttribute('data-boot-skip', '1')
+    html.setAttribute('data-booted', '1')
+    try {
+      sessionStorage.setItem(BOOT_SESSION_KEY, '1')
+    } catch {}
+  }, [])
+  return null
 }

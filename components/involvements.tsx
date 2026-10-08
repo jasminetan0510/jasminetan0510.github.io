@@ -60,7 +60,7 @@ const involvements: Involvement[] = [
  */
 export function Involvements() {
   return (
-    <section id="involvements" className="relative scroll-mt-8 bg-sky py-10 sm:py-14">
+    <section id="involvements" className="relative scroll-mt-20 bg-sky py-10 sm:py-14">
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading title="My involvements" />
@@ -107,6 +107,7 @@ export function Involvements() {
             </Reveal>
           ))}
         </div>
+
       </div>
     </section>
   )

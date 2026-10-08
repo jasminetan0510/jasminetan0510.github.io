@@ -1,21 +1,21 @@
 'use client'
 
-import { ArrowUp, Check, Copy, Download, Mail } from 'lucide-react'
+import { ArrowUp, Check, Copy, Download } from 'lucide-react'
 import { useLenis } from 'lenis/react'
 import { useEffect, useRef, useState } from 'react'
 import { CharacterParade } from '@/components/character-parade'
-import { ContactModal, openContactForm } from '@/components/contact-modal'
+import { ContactModal } from '@/components/contact-modal'
 import { SocialLinks } from '@/components/social-links'
 
 const EMAIL = 'jasminetan0510@gmail.com'
 
 /**
- * Footer: one clear call to action, then a quiet bottom row.
+ * Footer: compact and quiet.
  *
  * - Headline + a short line of context.
- * - Actions: "Get in touch" (opens the contact form), the email address
- *   with a one-click copy button (for people who'd rather use their own
- *   mail app), and Résumé.
+ * - Actions: the email address with a one-click copy button, and Résumé.
+ *   (The contact form is one click away in the header, so no second
+ *   "Get in touch" button here.)
  * - Bottom row: copyright, social icons, back to top.
  * - No dividers, tape, or backdrop: it sits on the same ivory as the
  *   sections above, so the page flows straight into it.
@@ -34,44 +34,34 @@ export function SiteFooter() {
 
   return (
     <footer id="contact" className="relative scroll-mt-8 bg-background">
-      <div className="relative mx-auto w-full max-w-5xl px-5 pt-10 pb-10 sm:px-8 sm:pt-14">
-        <h2 className="display max-w-3xl text-3xl leading-[1.05] text-balance sm:text-5xl">
+      <div className="relative mx-auto w-full max-w-5xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10">
+        <h2 className="display max-w-2xl text-2xl leading-[1.1] text-balance sm:text-3xl">
           Open to PM &amp; software engineering roles — let&apos;s build something.
         </h2>
-        <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+        <p className="mt-2 text-sm text-muted-foreground">
           Graduating June 2027 · Based in Los Angeles &amp; Santa Barbara
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => openContactForm()}
-            data-goatcounter-click="footer-contact"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-8px_rgb(0_0_0_/_0.4)] active:translate-y-0"
-          >
-            <Mail className="size-4" aria-hidden="true" />
-            Get in touch
-          </button>
-
+        <div className="mt-5 flex flex-wrap items-center gap-2.5">
           <CopyEmail />
 
           <a
             href="/resume.pdf"
             download
             data-goatcounter-click="footer-resume"
-            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary"
+            className="inline-flex items-center gap-2 rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
           >
             <Download className="size-4" aria-hidden="true" />
-            Resume
+            Résumé
           </a>
         </div>
 
         {/* Saved characters hop in place along the bottom of the footer. */}
-        <div className="mt-12">
+        <div className="mt-8">
           <CharacterParade />
         </div>
 
-        <div className="mt-8 flex flex-col-reverse items-start gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-5 flex flex-col-reverse items-start gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Jasmine Tan</p>
           <div className="flex items-center gap-3">
             <SocialLinks />
@@ -112,7 +102,7 @@ function CopyEmail() {
 
   return (
     <span className="inline-flex items-center rounded-full border border-input pl-4 text-sm">
-      <a href={`mailto:${EMAIL}`} className="py-2.5 font-medium hover:underline">
+      <a href={`mailto:${EMAIL}`} className="py-2 font-medium hover:underline">
         {EMAIL}
       </a>
       <button
@@ -120,7 +110,7 @@ function CopyEmail() {
         onClick={copy}
         data-goatcounter-click="email-copy"
         aria-label={copied ? 'Email copied' : 'Copy email address'}
-        className="ml-2 grid size-10 place-items-center rounded-full text-foreground/60 transition-colors hover:bg-secondary hover:text-foreground"
+        className="ml-1.5 grid size-9 place-items-center rounded-full text-foreground/60 transition-colors hover:bg-secondary hover:text-foreground"
       >
         {copied ? <Check className="size-4" aria-hidden="true" /> : <Copy className="size-4" aria-hidden="true" />}
       </button>

@@ -35,7 +35,7 @@ const BLURBS: Blurb[] = [
     side: 'left',
     row: 'top',
     label: 'studying',
-    text: 'Computer Science at UCSB, minoring in science + math education. Class of 2027.',
+    text: 'Computer Science, Technology Management, and Science + Math Education at UCSB. Class of 2027.',
   },
   {
     id: 'building',
@@ -56,7 +56,7 @@ const BLURBS: Blurb[] = [
     side: 'right',
     row: 'bottom',
     label: 'teaching',
-    text: 'Tutoring math since high school, with worksheets I write myself.',
+    text: 'Private tutoring math and English since high school, helping over 20 students.',
   },
 ]
 

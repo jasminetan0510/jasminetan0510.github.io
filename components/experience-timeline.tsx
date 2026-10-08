@@ -68,7 +68,6 @@ const WORK: Role[] = [
   },
 ]
 
-
 /** Renders **bold** spans inside a blurb. */
 function rich(text: string): ReactNode {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
@@ -128,7 +127,7 @@ function Timeline({ roles }: { roles: Role[] }) {
 
 export function ExperienceTimeline() {
   return (
-    <section id="experience" className="relative scroll-mt-8 bg-background py-10 sm:py-14">
+    <section id="experience" className="relative scroll-mt-20 bg-background py-10 sm:py-14">
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading title="Experience" />

@@ -4,8 +4,10 @@ import { Download, Star } from 'lucide-react'
 import { useLenis } from 'lenis/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { openContactForm } from '@/components/contact-modal'
 import { SocialLinks } from '@/components/social-links'
+import { scrollToSection } from '@/lib/scroll'
 
 // All links are home-page sections, in page order. They start with "/#"
 // so they also work from the project pages (navigate home, then jump).
@@ -27,13 +29,15 @@ const navLinks = [
  * invites the click.
  *
  * Section links show from md (768px); the social icons join from lg
- * (1024px).
+ * (1024px). The link for the section you're reading is highlighted (dark
+ * ink + filled star) as you scroll.
  * The footer still links GitHub and LinkedIn on small screens.
  */
 export function SiteHeader() {
   const lenis = useLenis()
   const pathname = usePathname()
   const onHome = pathname === '/'
+  const active = useActiveSection(onHome, pathname)
 
   // Anchor links jump instantly by default — Lenis only smooths wheel/
   // programmatic scroll, not native <a href="#..."> clicks. Route them
@@ -48,9 +52,15 @@ export function SiteHeader() {
     event: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) {
-    if (!href.startsWith('/#') || !onHome || !lenis) return
+    if (!href.startsWith('/#') || !onHome) return
     event.preventDefault()
-    lenis.scrollTo(href.slice(1), { offset: -16, duration: 1.3 })
+    const id = href.slice(2)
+    if (id === 'hero') {
+      if (lenis) lenis.scrollTo(0, { duration: 1.3 })
+      else window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    scrollToSection(id, lenis, 1.3)
   }
 
   return (
@@ -84,9 +94,14 @@ export function SiteHeader() {
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="group/link eyebrow flex items-center gap-1.5 rounded-full px-3 py-1.5 aria-[current=page]:text-foreground text-muted-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
+              data-active={active === link.href.slice(2)}
+              aria-current={active === link.href.slice(2) ? 'true' : undefined}
+              className="group/link eyebrow flex items-center gap-1.5 rounded-full px-3 py-1.5 data-[active=true]:text-foreground text-muted-foreground transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)]"
             >
-              <Star className="w-4 h-4 text-primary shrink-0 transition-all duration-200 ease-out group-hover/link:drop-shadow-[0_0_6px_var(--ring)]" />
+              <Star
+                aria-hidden="true"
+                className="w-4 h-4 text-primary shrink-0 transition-all duration-200 ease-out group-hover/link:drop-shadow-[0_0_6px_var(--ring)] group-data-[active=true]/link:fill-current"
+              />
               {link.label}
             </Link>
           ))}
@@ -116,4 +131,46 @@ export function SiteHeader() {
       </div>
     </header>
   )
+}
+
+/**
+ * Which home-page section the visitor is reading, for highlighting its
+ * nav link: the last section whose top has passed a line 35% down the
+ * screen. Nothing is highlighted while the hero is in view. On a project
+ * page, Projects is highlighted.
+ */
+function useActiveSection(onHome: boolean, pathname: string) {
+  const [active, setActive] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!onHome) {
+      setActive(pathname.startsWith('/projects') ? 'projects' : null)
+      return
+    }
+    const ids = navLinks.map((l) => l.href.slice(2))
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const line = window.innerHeight * 0.35
+      let current: string | null = null
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= line) current = id
+      }
+      setActive(current)
+    }
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+    }
+  }, [onHome, pathname])
+
+  return active
 }

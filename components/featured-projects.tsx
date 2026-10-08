@@ -36,18 +36,22 @@ const LAYOUT = projects.map((_, i) => ({
  */
 export function FeaturedProjects() {
   return (
-    <section id="projects" className="relative scroll-mt-8 bg-sky py-10 sm:py-14">
+    <section
+      id="projects"
+      className="relative scroll-mt-20 bg-sky py-10 sm:py-14"
+    >
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
-        <Reveal>
-          <SectionHeading title="Featured projects" />
-        </Reveal>
-
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-          <p className="text-sm text-muted-foreground">Click any card for the full case study.</p>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="rounded-full bg-card px-2 py-0.5 text-foreground/75">tech</span>
-            <span className="rounded-full border border-foreground/30 px-2 py-0.5 text-foreground/75">product</span>
-          </span>
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <Reveal>
+            <SectionHeading title="Featured projects" />
+          </Reveal>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pb-1">
+            <p className="text-sm text-muted-foreground">Click any card for the full case study.</p>
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="rounded-full bg-card px-2 py-0.5 text-foreground/75">tech</span>
+              <span className="rounded-full border border-foreground/30 px-2 py-0.5 text-foreground/75">product</span>
+            </span>
+          </div>
         </div>
 
         <ul className="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -59,6 +63,7 @@ export function FeaturedProjects() {
             </li>
           ))}
         </ul>
+
       </div>
 
       <style>{`

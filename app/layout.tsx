@@ -120,9 +120,10 @@ export default function RootLayout({
             exist, so either fill it in or comment it out. Click tracking:
             any element with data-goatcounter-click="name" is counted as
             an event (see the header + contact snippets). */}
-        <script
+        <Script
+          id="goatcounter"
+          strategy="afterInteractive"
           data-goatcounter="https://YOURCODE.goatcounter.com/count"
-          async
           src="https://gc.zgo.at/count.js"
         />
       </body>

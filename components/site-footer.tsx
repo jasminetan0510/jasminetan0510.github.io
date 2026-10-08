@@ -45,7 +45,7 @@ export function SiteFooter() {
         <div className="mt-5 flex flex-wrap items-center gap-2.5">
           <CopyEmail />
 
-          <a
+          {/* <a
             href="/resume.pdf"
             download
             data-goatcounter-click="footer-resume"
@@ -53,7 +53,28 @@ export function SiteFooter() {
           >
             <Download className="size-4" aria-hidden="true" />
             Resume
-          </a>
+          </a> */}
+          <span className="inline-flex items-center rounded-full border border-input pl-4 text-sm">
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-goatcounter-click="footer-resume-view"
+              className="py-2 font-medium hover:underline"
+            >
+              Resume
+            </a>
+            <a
+              href="/resume.pdf"
+              download="Jasmine-Tan-Resume.pdf"
+              data-goatcounter-click="footer-resume-download"
+              aria-label="Download résumé (PDF)"
+              title="Download PDF"
+              className="ml-1.5 grid size-9 place-items-center rounded-full text-foreground/60 transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <Download className="size-4" aria-hidden="true" />
+            </a>
+          </span>
         </div>
 
         {/* Saved characters hop in place along the bottom of the footer. */}

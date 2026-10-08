@@ -1,6 +1,6 @@
 'use client'
 
-import { Download, Star } from 'lucide-react'
+import { Download, FileText, Star } from 'lucide-react'
 import { useLenis } from 'lenis/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -110,13 +110,23 @@ export function SiteHeader() {
         <div className="flex shrink-0 items-center gap-4">
           <SocialLinks className="hidden lg:flex" />
           <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/15 lg:block" />
-          <a
+          {/* <a
             href="/resume.pdf"
             download
             data-goatcounter-click="resume-click"
             className="hidden items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-medium text-foreground/80 transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)] sm:inline-flex"
           >
             <Download className="size-3.5" aria-hidden="true" />
+            Resume
+          </a> */}
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-goatcounter-click="resume-click"
+            className="hidden items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-medium text-foreground/80 transition-all duration-200 ease-out hover:scale-110 hover:text-primary hover:drop-shadow-[0_0_8px_var(--ring)] sm:inline-flex"
+          >
+            <FileText className="size-3.5" aria-hidden="true" />
             Resume
           </a>
           <button

@@ -4,6 +4,9 @@ import { Download, Star } from 'lucide-react'
 import { useLenis } from 'lenis/react'
 import { useSound } from '@/components/sound-provider'
 import { openContactForm } from '@/components/contact-modal'
+import { SocialLinks } from '@/components/social-links'
+
+<SocialLinks className="hidden sm:flex" />
 
 const navLinks = [
   { label: 'Impact', href: '#impact', num: '01' },

@@ -1,101 +1,157 @@
 'use client'
 
-import { ArrowDown, Sparkles } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { ParallaxBackdrop } from '@/components/parallax-backdrop'
-import { Reveal } from '@/components/reveal'
 import { Tape } from '@/components/scrapbook'
+import { CloudNote } from '@/components/cloud-note'
+import { ScrollCue } from '@/components/scroll-cue'
 import { cn } from '@/lib/utils'
 
-const HEADLINE = "Hi, I'm Jasmine :)"
-
 /**
- * Types `text` out one character at a time. Set `start` to false to hold
- * off (e.g. until an earlier Reveal has finished), and `speed` in ms/char.
+ * Full-screen hero: headshot polaroid in the middle, with hand-drawn arrows
+ * pointing at it from short notes about me.
+ *
+ * - Arrows are measured from the real layout (offsetLeft/Top, which ignore
+ *   CSS transforms, so the entrance animation can't throw them off) and
+ *   re-measured on resize. Wide screens only (lg+); below that the notes
+ *   stack under the photo without arrows.
+ * - Entrance + arrow drawing are CSS-only and key off html[data-booted],
+ *   which the boot screen sets as it opens (rules live in globals.css).
+ *   Repeat visits and reduced-motion visitors get the final state at once.
  */
-function useTypewriter(
-  text: string,
-  { speed = 55, startDelay = 0, start = true } = {},
-) {
-  const [output, setOutput] = useState('')
-  const [done, setDone] = useState(false)
 
-  useEffect(() => {
-    if (!start) return
-
-    let charTimer: ReturnType<typeof setTimeout>
-    const startTimer = setTimeout(() => {
-      let i = 0
-      const tick = () => {
-        i += 1
-        setOutput(text.slice(0, i))
-        if (i < text.length) {
-          charTimer = setTimeout(tick, speed)
-        } else {
-          setDone(true)
-        }
-      }
-      tick()
-    }, startDelay)
-
-    return () => {
-      clearTimeout(startTimer)
-      clearTimeout(charTimer)
-    }
-  }, [text, speed, startDelay, start])
-
-  return { output, done }
+type Blurb = {
+  id: string
+  side: 'left' | 'right'
+  row: 'top' | 'bottom'
+  label: string
+  text: string
 }
 
-/**
- * Hero + polaroid, combined into one file since the polaroid only ever
- * appears here. The "Currently" line now lives as a caption under the
- * photo itself, rather than its own card in the text column or its own
- * page section.
- */
+// Order matters for the mobile stack. Edit freely; keep each to ~2 lines.
+const BLURBS: Blurb[] = [
+  {
+    id: 'studying',
+    side: 'left',
+    row: 'top',
+    label: 'studying',
+    text: 'Computer Science at UCSB, minoring in science + math education. Class of 2027.',
+  },
+  {
+    id: 'building',
+    side: 'right',
+    row: 'top',
+    label: 'building',
+    text: 'Software developer at Caliber Research Group, building tools for 250+ students a quarter.',
+  },
+  {
+    id: 'leading',
+    side: 'left',
+    row: 'bottom',
+    label: 'leading',
+    text: 'Team Lead on our UCSB × AppFolio capstone: a tenant-side leasing app in Ruby on Rails.',
+  },
+  {
+    id: 'teaching',
+    side: 'right',
+    row: 'bottom',
+    label: 'teaching',
+    text: 'Tutoring math since high school, with worksheets I write myself.',
+  },
+]
+
+// Top notes sit at the top of their row and bottom notes at the bottom, so
+// the four arrows fan out across the photo's full height instead of
+// bunching in the middle. Margins push each note out by a different amount
+// so the arrows vary in length and don't look stamped.
+const PLACEMENT: Record<string, string> = {
+  'left-top': 'lg:col-start-1 lg:row-start-1 lg:self-start lg:justify-self-end lg:mr-0 xl:mr-2 lg:-rotate-2',
+  'left-bottom': 'lg:col-start-1 lg:row-start-2 lg:self-end lg:justify-self-end lg:mr-6 xl:mr-8 lg:rotate-1',
+  'right-top': 'lg:col-start-3 lg:row-start-1 lg:self-start lg:justify-self-start lg:ml-6 xl:ml-8 lg:rotate-2',
+  'right-bottom': 'lg:col-start-3 lg:row-start-2 lg:self-end lg:justify-self-start lg:ml-0 xl:ml-2 lg:-rotate-1',
+}
+
+// Each note bobs on its own rhythm (duration, start offset, drift) so the
+// group never moves in lockstep.
+const FLOAT = [
+  { dur: 6.2, delay: -1.3, x: 2, y: -6 },
+  { dur: 7.1, delay: -3.8, x: -2, y: -5 },
+  { dur: 5.6, delay: -0.4, x: -1.5, y: -7 },
+  { dur: 6.7, delay: -2.6, x: 1.5, y: -5 },
+]
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
+
+const r1 = (n: number) => Math.round(n * 10) / 10
+
 export function Hero() {
-  const [flipped, setFlipped] = useState(false)
-  const [polaroidIn, setPolaroidIn] = useState(false)
-  const [reducedMotion, setReducedMotion] = useState(false)
+  const stageRef = useRef<HTMLDivElement>(null)
+  const photoRef = useRef<HTMLDivElement>(null)
+  const blurbRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [arrows, setArrows] = useState<string[]>([])
 
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mq.matches)
-    const onChange = () => setReducedMotion(mq.matches)
-    mq.addEventListener('change', onChange)
+  useIsoLayoutEffect(() => {
+    const stage = stageRef.current
+    const photo = photoRef.current
+    if (!stage || !photo) return
 
-    if (mq.matches) {
-      // Skip the drop-in choreography entirely — show the final state.
-      setPolaroidIn(true)
-      return () => mq.removeEventListener('change', onChange)
+    const measure = () => {
+      if (stage.offsetWidth < 900) {
+        setArrows([])
+        return
+      }
+      const p = {
+        l: photo.offsetLeft,
+        r: photo.offsetLeft + photo.offsetWidth,
+        t: photo.offsetTop,
+        b: photo.offsetTop + photo.offsetHeight,
+      }
+      setArrows(
+        BLURBS.map((b, i) => {
+          const el = blurbRefs.current[i]
+          if (!el) return ''
+          const left = b.side === 'left'
+          const top = b.row === 'top'
+          // From the note's inner edge…
+          const sx = left ? el.offsetLeft + el.offsetWidth + 12 : el.offsetLeft - 12
+          const sy = el.offsetTop + el.offsetHeight * 0.5
+          // …to the photo's edge, near its top or bottom so the four
+          // arrowheads land well apart.
+          const ex = left ? p.l - 12 : p.r + 12
+          const ey = p.t + (p.b - p.t) * (top ? 0.2 : 0.8)
+          // Bow the curve away from the middle so it reads hand-drawn.
+          const cx = (sx + ex) / 2
+          const cy = top ? Math.min(sy, ey) - 26 : Math.max(sy, ey) + 26
+          const a = Math.atan2(ey - cy, ex - cx)
+          const h = 10
+          const h1 = [ex - h * Math.cos(a - 0.5), ey - h * Math.sin(a - 0.5)]
+          const h2 = [ex - h * Math.cos(a + 0.5), ey - h * Math.sin(a + 0.5)]
+          return (
+            `M${r1(sx)} ${r1(sy)} Q${r1(cx)} ${r1(cy)} ${r1(ex)} ${r1(ey)} ` +
+            `M${r1(h1[0])} ${r1(h1[1])} L${r1(ex)} ${r1(ey)} L${r1(h2[0])} ${r1(h2[1])}`
+          )
+        }),
+      )
     }
 
-    // Let the text stagger (see Reveal delays below) lead, then have the
-    // polaroid drop in after, so the eye has somewhere to land first.
-    const t = setTimeout(() => setPolaroidIn(true), 450)
-    return () => {
-      clearTimeout(t)
-      mq.removeEventListener('change', onChange)
-    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(stage)
+    document.fonts?.ready.then(measure)
+    return () => ro.disconnect()
   }, [])
 
-  // Headline types out once the two Reveal items above it (delay 0, 90)
-  // have finished settling in. 180ms matches the h1's own Reveal delay
-  // so the wrapper fade and the first keystroke land together.
-  const { output: typedHeadline, done: typingDone } = useTypewriter(HEADLINE, {
-    speed: 55,
-    startDelay: 180,
-    start: !reducedMotion,
-  })
+  const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties
 
   return (
-    <header id="hero" className="relative overflow-hidden bg-accent">
+    <header
+      id="hero"
+      className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden bg-accent"
+    >
       <ParallaxBackdrop variant="cococream" speed={0.22} />
 
-      {/* Subtle static grain so the flat color block reads as paper/
-          texture rather than a flat CSS fill. Static — no motion, so it's
-          unaffected by prefers-reduced-motion. */}
+      {/* Subtle static grain so the flat color block reads as paper. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-multiply"
@@ -105,241 +161,136 @@ export function Hero() {
         }}
       />
 
-      {/* A couple of extra scrapbook stickers, floating at slightly
-          different depths/rhythms from each other so the cluster reads
-          as intentional rather than one lonely sticker. */}
-      <Sparkles
-        aria-hidden="true"
-        className={cn(
-          'pointer-events-none absolute top-28 right-[38%] size-5 -rotate-12 text-primary/50 sm:top-32',
-          !reducedMotion && 'animate-sticker-float',
-        )}
-      />
-      <Sparkles
-        aria-hidden="true"
-        className={cn(
-          'pointer-events-none absolute bottom-24 left-[6%] size-4 rotate-6 text-primary/40',
-          !reducedMotion && 'animate-sticker-float [animation-delay:1.1s]',
-        )}
-      />
-
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-10 px-5 pt-36 pb-16 sm:px-8 sm:pt-44 md:flex-row md:items-center md:justify-between md:gap-14">
-        <div className="flex max-w-xl flex-col gap-6">
-          <Reveal delay={0}>
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-3 py-1">
-              <span className="relative flex size-1.5">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60" />
-                <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
-              </span>
-              <span className="eyebrow text-muted-foreground">
-                Open to PM &amp; Software Engineering roles
-              </span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={90}>
-            <p className="eyebrow text-muted-foreground">
-              Jasmine Tan — Portfolio
-            </p>
-          </Reveal>
-
-          <Reveal delay={180}>
-            {/* aria-label carries the full string for screen readers /
-                SEO so they don't read partial characters mid-type; the
-                visible span is aria-hidden and is what actually animates. */}
-            <h1
-              aria-label={HEADLINE}
-              className={cn(
-                'display text-5xl leading-[0.95] text-balance sm:text-6xl lg:text-7xl',
-                !reducedMotion && typingDone && 'animate-breathe',
-              )}
-            >
-              <span aria-hidden="true">
-                {reducedMotion ? HEADLINE : typedHeadline}
-                {!reducedMotion && (
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'ml-0.5 -mb-[0.05em] inline-block h-[0.8em] w-[3px] align-middle bg-foreground/80',
-                      typingDone && 'animate-caret-blink',
-                    )}
-                  />
-                )}
-              </span>
-            </h1>
-          </Reveal>
-
-          {/* Shorter copy now, so this dropped a size step (was
-              text-xl/2xl/1.75rem) and gained max-w + text-balance —
-              that's what was pushing "back?" onto its own orphan line;
-              balance lets the browser pick break points that keep the
-              last line from being that short. */}
-          <Reveal delay={280}>
-            <p className="text-balance font-sans text-lg leading-snug font-light text-muted-foreground sm:text-xl lg:text-2xl">
-              My favorite problems sit between people and process: 
-              How can we build tech that gives time back?
-            </p>
-          </Reveal>
-
-          {/* Hard offset "sticker" shadow instead of a plain pill — reads
-              more like paper (matches the Tape language elsewhere) than a
-              generic rounded CTA. */}
-          <Reveal delay={480}>
-            <div className="flex flex-wrap items-center gap-3 pt-1">
-              <a
-                href="#projects"
-                className="group inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[3px_3px_0_0_theme(colors.foreground)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[4px_5px_0_0_theme(colors.foreground)] active:translate-y-0 active:shadow-[1px_1px_0_0_theme(colors.foreground)]"
-              >
-                See the work
-                <ArrowDown
-                  className="size-4 transition-transform duration-300 group-hover:translate-y-1"
-                  aria-hidden="true"
-                />
-              </a>
-            </div>
-          </Reveal>
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-5 pt-28 pb-28 sm:px-8 lg:gap-7 lg:pt-[5.75rem] lg:pb-[5.25rem] [@media(min-width:1024px)_and_(min-height:860px)]:gap-10">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div
+            className="hero-enter inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-3 py-1"
+            style={delay(0)}
+          >
+            <span className="relative flex size-1.5">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
+            </span>
+            <span className="eyebrow text-muted-foreground">
+              Open to PM &amp; Software Engineering roles
+            </span>
+          </div>
+          <h1
+            className="hero-enter display text-4xl leading-[0.95] text-balance sm:text-5xl [@media(min-width:1024px)_and_(min-height:860px)]:text-6xl"
+            style={delay(80)}
+          >
+            Hi, I&apos;m Jasmine :)
+          </h1>
+          <p
+            className="hero-enter max-w-xl text-balance font-sans text-base leading-snug font-light text-muted-foreground sm:text-lg lg:max-w-4xl"
+            style={delay(160)}
+          >
+            My favorite problems sit between people and process: how can we build tech that gives time back?
+          </p>
         </div>
 
-        {/* Polaroid photo — click to flip to a longer "currently" note.
-            The short version now lives as a caption under the photo at
-            all times (not just on flip), title bolded so it reads like a
-            polaroid label. Outer div: one-time spring drop-in on mount
-            (opacity/translate/scale only). Middle div: continuous idle
-            sway once settled (rotate only, paused on hover). */}
+        {/* Stage: photo in the middle column, notes left and right. */}
         <div
-          className={cn(
-            'relative mx-auto w-[15rem] shrink-0 sm:w-[18rem]',
-            'transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]',
-            polaroidIn
-              ? 'translate-y-0 scale-100 opacity-100'
-              : '-translate-y-10 scale-90 opacity-0',
-          )}
+          ref={stageRef}
+          className="relative grid w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-[1fr_auto_1fr] lg:grid-rows-2 lg:gap-x-16 lg:gap-y-2 xl:gap-x-20 [@media(min-width:1024px)_and_(min-height:860px)]:gap-y-8"
         >
-          <div
-            className={cn(
-              polaroidIn && !reducedMotion && 'animate-polaroid-sway',
-              'hover:[animation-play-state:paused]',
+          <svg
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 hidden size-full overflow-visible text-foreground/70 lg:block"
+          >
+            {arrows.map((d, i) =>
+              d ? (
+                <path
+                  key={BLURBS[i].id}
+                  d={d}
+                  pathLength={1}
+                  className="hero-arrow"
+                  style={delay(650 + i * 160)}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.6}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              ) : null,
             )}
+          </svg>
+
+          <div
+            ref={photoRef}
+            className="hero-enter relative col-span-full w-[15rem] sm:w-[17rem] lg:w-[15rem] [@media(min-width:1024px)_and_(min-height:860px)]:w-[17rem] [@media(min-width:1024px)_and_(max-height:640px)]:w-[13rem] lg:col-span-1 lg:col-start-2 lg:row-span-2 lg:row-start-1"
+            style={delay(160)}
           >
             <Tape className="-top-3 left-1/2 -translate-x-1/2 -rotate-2" />
-            <button
-              type="button"
-              onClick={() => setFlipped((v) => !v)}
-              aria-pressed={flipped}
-              className={cn(
-                'paper-edge group block w-full rounded-sm bg-card p-3 pb-4 text-left transition-transform duration-300 ease-out',
-                flipped
-                  ? 'rotate-1'
-                  : '-rotate-2 hover:rotate-0 hover:scale-[1.02]',
-              )}
-            >
+            <div className="paper-edge rounded-sm bg-card p-3 pb-4 -rotate-1 transition-transform duration-300 hover:rotate-0">
               <div className="relative aspect-square overflow-hidden bg-muted">
-                {flipped ? (
-                  <div className="flex h-full flex-col justify-center gap-2 p-4">
-                    <p className="display text-xl leading-snug">
-                      Currently preparing Caliber&apos;s project management platform and
-                      SciTrek&apos;s volunteer scheduler for launch.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Reaching 250+ undergraduate students beginning Fall 2026.
-                    </p>
-                  </div>
-                ) : (
-                  <Image
-                    src="/images/headshot2.png"
-                    alt="Jasmine Tan"
-                    fill
-                    sizes="(max-width: 640px) 240px, 264px"
-                    className="object-cover"
-                    priority
-                  />
-                )}
+                <Image
+                  src="/images/headshot2.png"
+                  alt="Jasmine Tan"
+                  fill
+                  sizes="(max-width: 640px) 240px, 272px"
+                  className="object-cover"
+                  priority
+                />
               </div>
-
-              {/* Caption strip — always visible, independent of flip
-                  state. Bolded title per your note; keep this short since
-                  the polaroid is narrow (15rem on mobile). */}
-              <p className="mt-2.5 text-[0.8rem] leading-snug text-foreground/80">
-                <span className="font-semibold text-foreground">
-                  Development Team
-                </span>
-                , Caliber Research Group
+              <p className="mt-2.5 text-center text-[0.8rem] leading-snug text-foreground/80">
+                <span className="font-semibold text-foreground">currently:</span> leading our team building
+                a tenant-side leasing app with AppFolio
               </p>
-              <p className="mt-1 eyebrow text-muted-foreground">
-                {flipped ? 'click to flip back' : 'click for more →'}
-              </p>
-            </button>
+            </div>
           </div>
+
+          {BLURBS.map((b, i) => {
+            const f = FLOAT[i % FLOAT.length]
+            return (
+              <CloudNote
+                key={b.id}
+                nodeRef={(el) => {
+                  blurbRefs.current[i] = el
+                }}
+                label={b.label}
+                text={b.text}
+                shape={i}
+                flip={b.side === 'right'}
+                breathe={f.dur + 1.3}
+                className={cn(
+                  'hero-enter hero-float max-w-[18rem] lg:max-w-[17rem] xl:max-w-[18rem] [@media(min-width:1024px)_and_(max-height:640px)]:max-w-[15rem]',
+                  PLACEMENT[`${b.side}-${b.row}`],
+                )}
+                style={
+                  {
+                    ...delay(320 + i * 110),
+                    '--float-dur': `${f.dur}s`,
+                    '--float-delay': `${f.delay}s`,
+                    '--float-x': `${f.x}px`,
+                    '--float-y': `${f.y}px`,
+                  } as CSSProperties
+                }
+              />
+            )
+          })}
         </div>
+
       </div>
 
+      <ScrollCue />
+
       <style jsx global>{`
-        @keyframes polaroid-sway {
+        @keyframes hero-float {
           0%,
           100% {
-            transform: rotate(-1.5deg);
+            translate: 0 0;
           }
           50% {
-            transform: rotate(1.5deg);
+            translate: var(--float-x, 0) var(--float-y, -6px);
           }
         }
-        .animate-polaroid-sway {
-          animation: polaroid-sway 6s ease-in-out infinite;
-          transform-origin: top center;
+        .hero-float {
+          animation: hero-float var(--float-dur, 6s) ease-in-out var(--float-delay, 0s) infinite;
         }
-
-        @keyframes breathe {
-          0%,
-          100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.015);
-          }
-        }
-        .animate-breathe {
-          display: inline-block;
-          animation: breathe 6s ease-in-out infinite;
-          transform-origin: center;
-        }
-
-        @keyframes sticker-float {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
-        }
-        .animate-sticker-float {
-          animation: sticker-float 4.5s ease-in-out infinite;
-        }
-
-        @keyframes caret-blink {
-          0%,
-          49% {
-            opacity: 1;
-          }
-          50%,
-          100% {
-            opacity: 0;
-          }
-        }
-        .animate-caret-blink {
-          animation: caret-blink 1s step-end infinite;
-        }
-
-        @keyframes wiggle {
-          0%,
-          100% {
-            transform: rotate(0deg);
-          }
-          25% {
-            transform: rotate(-4deg);
-          }
-          75% {
-            transform: rotate(4deg);
+        @media (prefers-reduced-motion: reduce) {
+          .hero-float {
+            animation: none;
           }
         }
       `}</style>

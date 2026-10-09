@@ -1,87 +1,100 @@
-import { ArrowRight } from 'lucide-react'
+'use client'
+
+import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
-import type { CSSProperties } from 'react'
-import { ProjectImage, StatusChip, Tags } from '@/components/project-bits'
-import { Reveal } from '@/components/reveal'
+import { useEffect, useRef, type CSSProperties } from 'react'
+import { ProjectImage } from '@/components/project-bits'
 import { SectionHeading } from '@/components/scrapbook'
 import { projects, type Project } from '@/lib/projects'
 
-/** Deterministic 0–1 "random" from an index, identical on server and client. */
-function rand(i: number, salt: number) {
-  let h = Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(salt + 1, 0x85ebca6b)
-  h ^= h >>> 15
-  h = Math.imul(h, 0x2c1b3c6d)
-  h ^= h >>> 12
-  h = Math.imul(h, 0x297a2d39)
-  h ^= h >>> 15
-  return (h >>> 0) / 4294967296
-}
-const r2 = (n: number) => Math.round(n * 100) / 100
-
-// Per-card tilt and its own breathing rhythm, so the grid never moves in
-// lockstep.
-const LAYOUT = projects.map((_, i) => ({
-  rot: r2((rand(i, 2) - 0.5) * 2),
-  bobDur: r2(5.5 + rand(i, 4) * 3.5),
-  bobDelay: r2(-rand(i, 5) * 7),
-  bobX: r2((rand(i, 6) - 0.5) * 3),
-  bobY: r2(3 + rand(i, 7) * 3),
-}))
-
 /**
- * Featured projects: every project visible at a glance (3 across on
- * desktop, 2 on tablets, 1 on phones). Each card tilts slightly and
- * breathes on its own rhythm, backlights on hover/focus, and links to its
- * own case-study page at /projects/<slug>.
+ * Featured projects: a calm, even grid (3 across on desktop, 2 on tablets,
+ * 1 on phones). No tilt or bobbing; the life comes from motion that
+ * responds to the visitor:
+ *
+ * - Scroll reveal: as the grid enters the screen, cards rise and fade in
+ *   one after another, and each image settles from a slight zoom + blur
+ *   into focus. Plays once.
+ * - Hover / keyboard focus: the card lifts a little, the image eases in,
+ *   and the arrow slides up-right.
+ *
+ * Reduced motion: everything is simply visible, with no movement.
+ * No JS (or before hydration): cards are visible; the reveal only hides
+ * them once the script has confirmed it can animate them.
  */
 export function FeaturedProjects() {
+  const gridRef = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-reveal]'))
+    // Only animate cards that start below the fold, so nothing already
+    // on screen blinks out and back in.
+    const below = cards.filter((c) => c.getBoundingClientRect().top > window.innerHeight)
+    below.forEach((c) => c.setAttribute('data-reveal', 'pending'))
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          entry.target.setAttribute('data-reveal', 'shown')
+          io.unobserve(entry.target)
+        })
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.15 },
+    )
+    below.forEach((c) => io.observe(c))
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <section
-      id="projects"
-      className="relative scroll-mt-20 bg-sky py-10 sm:py-14"
-    >
+    <section id="projects" className="relative scroll-mt-20 bg-sky py-14 sm:py-20">
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-          <Reveal>
-            <SectionHeading title="Featured projects" />
-          </Reveal>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pb-1">
-            <p className="text-sm text-muted-foreground">Click any card for the full case study.</p>
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="rounded-full bg-card px-2 py-0.5 text-foreground/75">tech</span>
-              <span className="rounded-full border border-foreground/30 px-2 py-0.5 text-foreground/75">product</span>
-            </span>
-          </div>
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+          <SectionHeading title="Featured projects" />
+          <p className="pb-1 text-sm text-muted-foreground">Selected work, with case studies.</p>
         </div>
 
-        <ul className="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+        <ul ref={gridRef} className="mt-8 grid gap-5 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, i) => (
-            <li key={project.slug}>
-              <Reveal delay={(i % 3) * 80}>
-                <ProjectCard project={project} layout={LAYOUT[i]} priority={i < 3} />
-              </Reveal>
+            <li
+              key={project.slug}
+              data-reveal="idle"
+              // Stagger by column so each row ripples left to right.
+              style={{ '--stagger': `${(i % 3) * 90}ms` } as CSSProperties}
+              className="project-reveal"
+            >
+              <ProjectCard project={project} index={i} priority={i < 3} />
             </li>
           ))}
         </ul>
-
       </div>
 
       <style>{`
-        @keyframes card-breathe {
-          0%,
-          100% {
-            translate: 0 0;
-          }
-          50% {
-            translate: var(--bob-x, 0) calc(var(--bob-y, 4px) * -1);
-          }
+        /* Scroll reveal */
+        .project-reveal {
+          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms),
+            translate 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms);
         }
-        .card-breathe {
-          animation: card-breathe var(--bob-dur, 6s) ease-in-out var(--bob-delay, 0s) infinite;
+        .project-reveal .project-img {
+          transition: scale 1.1s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms),
+            filter 1.1s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms);
+        }
+        .project-reveal[data-reveal='pending'] {
+          opacity: 0;
+          translate: 0 24px;
+        }
+        .project-reveal[data-reveal='pending'] .project-img {
+          scale: 1.06;
+          filter: blur(6px);
         }
         @media (prefers-reduced-motion: reduce) {
-          .card-breathe {
-            animation: none;
+          .project-reveal,
+          .project-reveal .project-img {
+            transition: none;
           }
         }
       `}</style>
@@ -89,69 +102,48 @@ export function FeaturedProjects() {
   )
 }
 
-function ProjectCard({
-  project,
-  layout,
-  priority,
-}: {
-  project: Project
-  layout: (typeof LAYOUT)[number]
-  priority: boolean
-}) {
+function ProjectCard({ project, index, priority }: { project: Project; index: number; priority: boolean }) {
+  const tags = [...project.stack.slice(0, 3), ...project.pm.slice(0, 1)]
+
   return (
-    // Outer: slight tilt + its own breathing rhythm.
-    <div
-      className="card-breathe h-full"
-      style={
-        {
-          rotate: `${layout.rot}deg`,
-          '--bob-dur': `${layout.bobDur}s`,
-          '--bob-delay': `${layout.bobDelay}s`,
-          '--bob-x': `${layout.bobX}px`,
-          '--bob-y': `${layout.bobY}px`,
-        } as CSSProperties
-      }
+    <Link
+      href={`/projects/${project.slug}`}
+      className="group flex h-full flex-col overflow-hidden rounded-xl border border-foreground/10 bg-card transition-[translate,box-shadow,border-color] duration-300 ease-out outline-none hover:-translate-y-1 hover:border-foreground/20 hover:shadow-[0_18px_40px_-24px_rgb(0_0_0_/_0.35)] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Link
-        href={`/projects/${project.slug}`}
-        className="group relative isolate block h-full outline-none"
-      >
-        {/* Backlight: soft warm "sunlight" behind the card on hover/focus. */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100"
-          style={{
-            background:
-              'radial-gradient(closest-side, oklch(0.96 0.06 88 / 0.95) 30%, oklch(0.94 0.05 85 / 0.5) 62%, transparent)',
-          }}
-        />
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-foreground/10 bg-muted">
+        <div className="project-img absolute inset-0">
+          <ProjectImage
+            project={project}
+            sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 320px"
+            priority={priority}
+            className="transition-[scale] duration-700 ease-out group-hover:scale-[1.04] group-focus-visible:scale-[1.04]"
+          />
+        </div>
+      </div>
 
-        <article className="paper-edge relative flex h-full flex-col overflow-hidden rounded-sm border border-foreground/10 bg-card transition-[translate,box-shadow] duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_16px_34px_-18px_rgb(0_0_0_/_0.3)] group-focus-visible:-translate-y-1 group-focus-visible:ring-2 group-focus-visible:ring-ring">
-          <div className="relative aspect-[16/9] overflow-hidden bg-muted">
-            <ProjectImage
-              project={project}
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 320px"
-              priority={priority}
-              className="transition-[filter,scale] duration-500 group-hover:scale-[1.03] group-hover:brightness-105"
-            />
-            <StatusChip status={project.status} className="absolute top-2.5 left-2.5" />
-          </div>
+      <div className="flex flex-1 flex-col p-5">
+        {/* Index + status, like a quiet label row */}
+        <div className="flex items-center justify-between text-[11px] tracking-wide text-muted-foreground">
+          <span className="tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-foreground/40" aria-hidden="true" />
+            {project.status}
+          </span>
+        </div>
 
-          <div className="flex flex-1 flex-col gap-1.5 p-4">
-            <div>
-              <h3 className="display text-lg leading-tight">{project.name}</h3>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">{project.role}</p>
-            </div>
-            <p className="line-clamp-2 text-[0.85rem] leading-snug text-foreground/85">{project.tagline}</p>
-            <Tags project={project} compact className="pt-0.5" />
-            {/* mt-auto pins this to the bottom so every card in a row lines up */}
-            <span className="mt-auto inline-flex items-center gap-1.5 pt-1.5 text-[0.8rem] font-medium text-foreground/65 transition-colors group-hover:text-foreground">
-              {project.caseStudy ? 'Read case study' : 'View project'}
-              <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-            </span>
-          </div>
-        </article>
-      </Link>
-    </div>
+        <h3 className="display mt-3 flex items-start justify-between gap-3 text-xl leading-tight">
+          {project.name}
+          <ArrowUpRight
+            aria-hidden="true"
+            className="mt-0.5 size-4 shrink-0 text-foreground/40 transition-[translate,color] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
+          />
+        </h3>
+        <p className="mt-1 text-xs text-muted-foreground">{project.role}</p>
+        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-foreground/80">{project.tagline}</p>
+
+        {/* Tags as quiet text, not pills: cleaner, and they never wrap into a wall */}
+        <p className="mt-auto pt-4 text-xs text-muted-foreground">{tags.join(' · ')}</p>
+      </div>
+    </Link>
   )
 }

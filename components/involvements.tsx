@@ -2,9 +2,9 @@
 
 import { ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
-import { PaperCard, SectionHeading } from '@/components/scrapbook'
-import { Reveal } from '@/components/reveal'
-import { cn } from '@/lib/utils'
+import { useRef, type CSSProperties } from 'react'
+import { SectionHeading } from '@/components/scrapbook'
+import { useStaggerReveal } from '@/lib/use-stagger-reveal'
 
 type Involvement = {
   name: string
@@ -53,62 +53,92 @@ const involvements: Involvement[] = [
   },
 ]
 
+/** "www.ucsbtasa.com/" → "ucsbtasa.com" for the card footer. */
+const domain = (url: string) => new URL(url).hostname.replace(/^www\./, '')
+
 /**
- * All involvements in one gallery row of 4 on desktop (2 on tablets, 1 on
- * phones) — nothing hidden behind a carousel. A slight alternating tilt
- * keeps the row from feeling like a rigid product layout.
+ * Involvements: same clean card language as Featured projects. 4 across on
+ * desktop, 2 on tablets, 1 on phones. The whole card links to the
+ * organization's site. Cards rise in with a staggered scroll reveal, and
+ * lift on hover with the photo easing in.
  */
 export function Involvements() {
+  const gridRef = useRef<HTMLUListElement>(null)
+  useStaggerReveal(gridRef)
+
   return (
-    <section id="involvements" className="relative scroll-mt-20 bg-sky py-10 sm:py-14">
+    <section id="involvements" className="relative scroll-mt-20 bg-sky py-14 sm:py-20">
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
-        <Reveal>
-          <SectionHeading title="My involvements" />
-        </Reveal>
-
-        <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {involvements.map((item, index) => (
-            <Reveal key={item.name} delay={index * 90}>
-              <PaperCard
-                className={cn(
-                  'group flex h-full flex-col overflow-hidden p-0 transition-transform duration-300 hover:-translate-y-1 hover:rotate-0',
-                  index % 2 === 0 ? 'sm:-rotate-1' : 'sm:rotate-1',
-                )}
-              >
-                <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted">
-                  <Image
-                    src={item.image}
-                    alt={`${item.name} — ${item.role}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  />
-                </div>
-
-                <div className="flex flex-1 flex-col gap-1.5 p-4 sm:p-5">
-                  <h3 className="display line-clamp-2 text-lg leading-tight">{item.name}</h3>
-                  <p className="line-clamp-2 text-xs text-muted-foreground">
-                    {item.role}
-                    {item.when ? <span className="text-foreground/50"> · {item.when}</span> : null}
-                  </p>
-                  <p className="mt-1 line-clamp-4 text-sm leading-relaxed text-foreground/80">{item.blurb}</p>
-                  <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="mt-auto inline-flex w-fit items-center gap-1 pt-2 text-sm font-medium text-primary hover:underline"
-                  >
-                    Visit website
-                    <ArrowUpRight className="size-3.5" aria-hidden="true" />
-                  </a>
-                </div>
-              </PaperCard>
-            </Reveal>
-          ))}
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+          <SectionHeading title="Involvements" />
+          <p className="pb-1 text-sm text-muted-foreground">Leadership, service, and teaching.</p>
         </div>
 
+        <ul ref={gridRef} className="mt-8 grid gap-5 sm:mt-10 sm:grid-cols-2 lg:grid-cols-4">
+          {involvements.map((item, i) => (
+            <li
+              key={item.name}
+              data-reveal="idle"
+              className="stagger-reveal"
+              style={{ '--stagger': `${(i % 4) * 90}ms` } as CSSProperties}
+            >
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={`${item.name} (opens in a new tab)`}
+                className="group flex h-full flex-col overflow-hidden rounded-xl border border-foreground/10 bg-card transition-[translate,box-shadow,border-color] duration-300 ease-out outline-none hover:-translate-y-1 hover:border-foreground/20 hover:shadow-[0_18px_40px_-24px_rgb(0_0_0_/_0.35)] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden border-b border-foreground/10 bg-muted">
+                  <div className="stagger-img absolute inset-0">
+                    <Image
+                      src={item.image}
+                      alt=""
+                      fill
+                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 240px"
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      className="object-cover transition-[scale] duration-700 ease-out group-hover:scale-[1.04] group-focus-visible:scale-[1.04]"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col p-5">
+                  {item.when ? (
+                    <p className="text-[11px] tracking-wide text-muted-foreground">{item.when}</p>
+                  ) : null}
+                  <h3 className="display mt-1.5 text-lg leading-tight">{item.name}</h3>
+                  <p className="mt-1 text-xs leading-snug text-muted-foreground">{item.role}</p>
+                  <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-foreground/80">{item.blurb}</p>
+
+                  <span className="mt-auto flex items-center justify-between pt-4 text-xs text-muted-foreground transition-colors group-hover:text-foreground">
+                    {domain(item.href)}
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      className="size-4 transition-[translate] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    />
+                  </span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
+
+      <style>{`
+        .stagger-reveal {
+          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms),
+            translate 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms);
+        }
+        .stagger-reveal .stagger-img {
+          transition: scale 1.1s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms),
+            filter 1.1s cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms);
+        }
+        .stagger-reveal[data-reveal='pending'] { opacity: 0; translate: 0 24px; }
+        .stagger-reveal[data-reveal='pending'] .stagger-img { scale: 1.06; filter: blur(6px); }
+        @media (prefers-reduced-motion: reduce) {
+          .stagger-reveal, .stagger-reveal .stagger-img { transition: none; }
+        }
+      `}</style>
     </section>
   )
 }
